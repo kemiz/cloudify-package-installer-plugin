@@ -11,19 +11,16 @@ node_types:
 
   cloudify.nodes.PackageInstaller:
     derived_from: cloudify.nodes.SoftwareComponent
-    properties:
-      package_list: {}
-      repo:
-        default: True
-        type: boolean
     interfaces:
       cloudify.interfaces.lifecycle:
         create:
           implementation: package_installer.package_installer_plugin.tasks.install
           inputs:
-            repo:
-              default: { get_property: [ SELF, repo ] }
+            install_from_repo:
+              default: True
+              type: boolean
+              description: >
+                Install from repository or URL
             package_list:
-              default: { get_property: [ SELF, package_list ] }
               description: >
                 Provide a list of RPM or DEB file URLs to install

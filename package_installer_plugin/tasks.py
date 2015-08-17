@@ -26,7 +26,7 @@ from cloudify.decorators import operation
 
 
 @operation
-def install(package_list, repo, **_):
+def install(package_list, install_from_repo, **_):
     """ Installs a list of packages """
 
     ctx.logger.info('Attempting to install packages')
@@ -35,7 +35,7 @@ def install(package_list, repo, **_):
     ctx.logger.info('Working environment: {0} {2} v{1}'.format(distro[0], distro[1], distro[2]))
 
     # Install from repository (yum / apt)
-    if repo:
+    if install_from_repo:
         for package_to_install in package_list:
             ctx.logger.info('Installing from URL: {0}'.format(package_to_install))
             _install_from_repo(package=package_to_install, platform=distro_lower)
