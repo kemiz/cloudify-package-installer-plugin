@@ -21,7 +21,9 @@ node_types:
         create:
           implementation: package_installer.package_installer_plugin.tasks.install
           inputs:
-            package_url:
+            repo:
+              default: { get_property: [ SELF, repo ] }
+            package_list:
               default: { get_property: [ SELF, package_list ] }
               description: >
                 Provide a list of RPM or DEB file URLs to install
