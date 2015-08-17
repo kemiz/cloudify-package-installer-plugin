@@ -1,0 +1,27 @@
+##################################################################################
+# Cloudify Package Installer Plugin.
+##################################################################################
+
+plugins:
+  package_installer:
+    executor: host_agent
+    source: https://github.com/EarthmanT/cloudify-package-installer-plugin/archive/3.2.zip
+
+node_types:
+
+  cloudify.nodes.PackageInstaller:
+    derived_from: cloudify.nodes.SoftwareComponent
+    properties:
+      package_list: {}
+      repo:
+        default: True
+        type: boolean
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        create:
+          implementation: package_installer.package_installer_plugin.tasks.install
+          inputs:
+            package_url:
+              default: { get_property: [ SELF, package_list ] }
+              description: >
+                Provide a list of RPM or DEB file URLs to install
