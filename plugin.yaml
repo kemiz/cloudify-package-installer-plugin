@@ -5,7 +5,7 @@
 plugins:
   package_installer:
     executor: host_agent
-    source: https://github.com/EarthmanT/cloudify-package-installer-plugin/archive/3.2.zip
+    source: https://github.com/kemiz/cloudify-package-installer-plugin/archive/master.zip
 
 node_types:
 
