@@ -37,13 +37,13 @@ def install(package_list, install_from_repo, **_):
     # Install from repository (yum / apt)
     if install_from_repo:
         for package_to_install in package_list:
-            ctx.logger.info('Installing from URL: {0}'.format(package_to_install))
+            ctx.logger.info('Installing from repository: {0}'.format(package_to_install))
             _install_from_repo(package=package_to_install, platform=distro_lower)
 
     # Install from package
     else:
         for package_to_install in package_list:
-            ctx.logger.info('Installing {0}'.format(package_to_install))
+            ctx.logger.info('Installing from URL: {0}'.format(package_to_install))
             _install_from_repo(package=package_to_install, platform=distro_lower)
 
 
@@ -52,6 +52,7 @@ def _install_from_repo(platform, package):
 
     # Install package
     if 'ubuntu' in platform:
+        # TODO: apt-get update should not get called every install
         run('sudo apt-get update')
         install_command = 'sudo apt-get -qq --no-upgrade install {0}'.format(package)
     elif 'centos' in platform:
