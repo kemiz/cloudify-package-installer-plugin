@@ -1,5 +1,4 @@
 ##Cloudify Package Installer Plugin
-========================
 
 This plugin allows you to install a given list of packages on a provisioned host.
 
