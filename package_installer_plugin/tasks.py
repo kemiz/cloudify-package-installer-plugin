@@ -29,7 +29,7 @@ from cloudify.decorators import operation
 def install(service_to_install, **_):
     """ Installs a list of packages """
 
-    ctx.logger.info('Attempting to install packages')
+    ctx.logger.info('Installing {0}'.format(service_to_install))
     distro = platform.linux_distribution(full_distribution_name=False)
     distro_lower = [x.lower() for x in distro]
     ctx.logger.info('Working environment: {0} {2} v{1}'.format(distro[0], distro[1], distro[2]))
@@ -37,7 +37,7 @@ def install(service_to_install, **_):
     if service_to_install is 'elasticsearch':
         from elasticsearch_plugin import tasks as elasticsearch
         elasticsearch.install(install_java=True)
-        ctx.logger.info('Installing {0}'.format(service_to_install))
+
     elif service_to_install is 'logstash':
         from logstash_plugin import tasks as logstash
         logstash.install()

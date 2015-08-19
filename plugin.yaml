@@ -5,7 +5,7 @@
 plugins:
   package_installer:
     executor: host_agent
-    source: https://github.com/kemiz/cloudify-package-installer-plugin/archive/master.zip
+    source: https://github.com/kemiz/cloudify-package-installer-plugin/archive/3.2-plugin-aggregator-test.zip
 
 node_types:
 
@@ -16,11 +16,6 @@ node_types:
         create:
           implementation: package_installer.package_installer_plugin.tasks.install
           inputs:
-            install_from_repo:
-              default: True
-              type: boolean
+            service_to_install:
               description: >
-                Install from repository or URL
-            package_list:
-              description: >
-                Provide a list of RPM or DEB file URLs to install
+                Name of the service to install
