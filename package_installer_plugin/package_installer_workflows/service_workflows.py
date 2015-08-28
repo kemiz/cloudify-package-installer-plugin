@@ -23,5 +23,5 @@ def start_service(service_name, node_id, **_):
             break
 
     ctx.logger.info("executing instance {0}".format(instance))
-    plugin_operation_path = INSTALLER_PLUGIN + SERVICE_TASKS + START_SERVICE
+    plugin_operation_path = service_commands + 'start_service'
     instance.execute_operation(plugin_operation_path, service_name)

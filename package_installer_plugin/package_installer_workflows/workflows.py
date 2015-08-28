@@ -21,8 +21,8 @@ def remove_packages(package, node_id, **_):
             break
 
     ctx.logger.info("executing on instance {0}".format(instance))
-    plugin_operation_path = INSTALLER_PLUGIN + INSTALL_TASKS + REMOVE_PACKAGES
-    instance.execute_operation(plugin_operation_path, package)
+    operation_path = package_commands + 'remove_packages'
+    instance.execute_operation(operation_path, package)
 
 
 @workflow
@@ -41,5 +41,5 @@ def install_packages(package, node_id, **_):
             break
 
     ctx.logger.info("executing on instance {0}".format(instance))
-    plugin_operation_path = INSTALLER_PLUGIN + INSTALL_TASKS + INSTALL_PACKAGES
-    instance.execute_operation(plugin_operation_path, package)
+    operation_path = package_commands + 'install_packages'
+    instance.execute_operation(operation_path, package)

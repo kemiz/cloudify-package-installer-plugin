@@ -1,24 +1,20 @@
 __author__ = 'kemi'
 
 # Plugin globals
-INSTALLER_PLUGIN = 'package_installer_plugin.'
-INSTALL_TASKS = 'tasks.'
-SERVICE_TASKS = 'service_tasks.'
-START_SERVICE = 'start_service'
-STOP_SERVICE = 'stop_service'
+service_commands = 'service.commands.'
+package_commands = 'package.commands'
 
-
-INSTALL = 'install '
-REMOVE = 'remove '
-INSTALL_PACKAGES = 'install_packages'
-REMOVE_PACKAGES = 'remove_packages'
+install = 'install '
+remove = 'remove '
+install_packages = 'install_packages'
+remove_packages = 'remove_packages'
 
 
 # Install commands
-APT_COMMAND = 'sudo apt-get -y '
-APT_UPDATE_COMMAND = 'sudo apt-get update'
-DPKG_COMMAND = 'sudo dpkg -i '
-YUM_COMMAND = 'sudo yum -y '
+apt_get = 'sudo apt-get -y '
+apt_get_update = 'sudo apt-get update'
+dpkg = 'sudo dpkg -i '
+yum = 'sudo yum -y '
 
 
 # Services

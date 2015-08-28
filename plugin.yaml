@@ -123,7 +123,20 @@ node_types:
               default: {  get_property: [ SELF,  service_name ] }
               description: >
                 Name of the service to stop
-
+      service.commands:
+        start_service:
+            implementation: package_installer.package_installer_plugin.service_tasks.start_service
+        stop_service:
+            implementation: package_installer.package_installer_plugin.service_tasks.stop_service
+        restart_service:
+            implementation: package_installer.package_installer_plugin.service_tasks.restart_service
+      package.commands:
+        start_service:
+            implementation: package_installer.package_installer_plugin.tasks.install_packages
+        stop_service:
+            implementation: package_installer.package_installer_plugin.tasks.remove_packages
+        restart_service:
+            implementation: package_installer.package_installer_plugin.tasks.reinstall_packages
 
   cloudify.nodes.AppInstaller:
     derived_from: cloudify.nodes.ApplicationModule
