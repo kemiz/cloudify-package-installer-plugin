@@ -256,8 +256,8 @@ node_types:
 relationships:
   tomcat_server.contained_in:
     derived_from: cloudify.relationships.contained_in
-    interfaces:
-      cloudify.interfaces.lifecycle:
+    target_interfaces:
+      cloudify.interfaces.relationship_lifecycle:
         postconfigure:
           implementation: package_installer.package_installer_plugin.service_tasks.stop_service
           inputs:
