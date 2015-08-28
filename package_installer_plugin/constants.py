@@ -24,4 +24,4 @@ YUM_COMMAND = 'sudo yum -y '
 # Services
 START_SERVICE_COMMAND = 'sudo start service '
 STOP_SERVICE_COMMAND = 'sudo stop service '
-RESTART_SERVICE = 'sudo restart service '
+RESTART_SERVICE_COMMAND = 'sudo restart service '

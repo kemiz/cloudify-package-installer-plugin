@@ -8,78 +8,78 @@ plugins:
     executor: host_agent
     source: https://github.com/kemiz/cloudify-package-installer-plugin/archive/master.zip
 
-#workflows:
-#
-#    install_packages:
-#        mapping: package_installer.package_installer_plugin.tasks.install_packages
-#        parameters:
-#            package_list:
-#              description: >
-#                Provide a list of RPM or DEB file URLs to install
-#            node_id:
-#              description: >
-#                The node id to execute workflow on
-#
-#    remove_packages:
-#        mapping: package_installer.package_installer_plugin.tasks.remove_packages
-#        parameters:
-#            package_list:
-#              description: >
-#                Provide a list of RPM or DEB file URLs to uninstall
-#            node_id:
-#              description: >
-#                The node id to execute workflow on
-#
-#    reinstall_packages:
-#        mapping: package_installer.package_installer_plugin.tasks.reinstall_packages
-#        parameters:
-#            package_list:
-#              description: >
-#                Provide a list of RPM or DEB file URLs to reinstall
-#            node_id:
-#              description: >
-#                The node id to execute workflow on
-#
-#    upgrade_packages:
-#        mapping: package_installer.package_installer_plugin.tasks.reinstall_packages
-#        parameters:
-#            package_list:
-#              description: >
-#                Provide a list of RPM or DEB file URLs to reinstall
-#            node_id:
-#              description: >
-#                The node id to execute workflow on
-#
-#
-#    start_service:
-#        mapping: package_installer.package_installer_plugin.service_tasks.start_service
-#        parameters:
-#            service_name:
-#              description: >
-#                Name of the service to start
-#            node_id:
-#              description: >
-#                The node id to execute workflow on
-#
-#    stop_service:
-#        mapping: package_installer.package_installer_plugin.service_tasks.stop_service
-#        parameters:
-#            service_name:
-#              description: >
-#                Name of the service to stop
-#            node_id:
-#              description: >
-#                The node id to execute workflow on
-#
-#    restart_service:
-#        mapping: package_installer.package_installer_plugin.service_tasks.restart_service
-#        parameters:
-#            service_name:
-#              description: >
-#                Name of the service to restart
-#            node_id:
-#              description: >
-#                The node id to execute workflow on
+workflows:
+
+    install_packages:
+        mapping: package_installer.package_installer_plugin.tasks.install_packages
+        parameters:
+            package_list:
+              description: >
+                Provide a list of RPM or DEB file URLs to install
+            node_id:
+              description: >
+                The node id to execute workflow on
+
+    remove_packages:
+        mapping: package_installer.package_installer_plugin.tasks.remove_packages
+        parameters:
+            package_list:
+              description: >
+                Provide a list of RPM or DEB file URLs to uninstall
+            node_id:
+              description: >
+                The node id to execute workflow on
+
+    reinstall_packages:
+        mapping: package_installer.package_installer_plugin.tasks.reinstall_packages
+        parameters:
+            package_list:
+              description: >
+                Provide a list of RPM or DEB file URLs to reinstall
+            node_id:
+              description: >
+                The node id to execute workflow on
+
+    upgrade_packages:
+        mapping: package_installer.package_installer_plugin.tasks.reinstall_packages
+        parameters:
+            package_list:
+              description: >
+                Provide a list of RPM or DEB file URLs to reinstall
+            node_id:
+              description: >
+                The node id to execute workflow on
+
+
+    start_service:
+        mapping: package_installer.package_installer_plugin.service_tasks.start_service
+        parameters:
+            service_name:
+              description: >
+                Name of the service to start
+            node_id:
+              description: >
+                The node id to execute workflow on
+
+    stop_service:
+        mapping: package_installer.package_installer_plugin.service_tasks.stop_service
+        parameters:
+            service_name:
+              description: >
+                Name of the service to stop
+            node_id:
+              description: >
+                The node id to execute workflow on
+
+    restart_service:
+        mapping: package_installer.package_installer_plugin.service_tasks.restart_service
+        parameters:
+            service_name:
+              description: >
+                Name of the service to restart
+            node_id:
+              description: >
+                The node id to execute workflow on
 node_types:
 
   cloudify.nodes.ServiceInstaller:
