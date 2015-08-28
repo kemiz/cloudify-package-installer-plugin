@@ -10,6 +10,11 @@ plugins:
 
 workflows:
 
+  ##################################################################################
+  # Package workflows
+  # Install, remove & update packages on Ubuntu or CentOS systems
+  ##################################################################################
+
     install_packages:
         mapping: package_installer.package_installer_plugin.tasks.install_packages
         parameters:
@@ -50,11 +55,16 @@ workflows:
               description: >
                 The node id to execute workflow on
 
+  ##################################################################################
+  # Service workflows
+  # Start, stop & restart installed services on Ubuntu or CentOS systems
+  ##################################################################################
 
     start_service:
         mapping: package_installer.package_installer_plugin.service_tasks.start_service
         parameters:
             service_name:
+            default: { get_property: [ cloudify.nodes.ServiceInstaller,  service_name ] }
               description: >
                 Name of the service to start
             node_id:
@@ -65,6 +75,7 @@ workflows:
         mapping: package_installer.package_installer_plugin.service_tasks.stop_service
         parameters:
             service_name:
+              default: { get_property: [ cloudify.nodes.ServiceInstaller,  service_name ] }
               description: >
                 Name of the service to stop
             node_id:
@@ -75,18 +86,29 @@ workflows:
         mapping: package_installer.package_installer_plugin.service_tasks.restart_service
         parameters:
             service_name:
+              default: { get_property: [ cloudify.nodes.ServiceInstaller,  service_name ] }
               description: >
                 Name of the service to restart
             node_id:
               description: >
                 The node id to execute workflow on
+
+
 node_types:
+
+  ##################################################################################
+  # Service Installer Type
+  # A base type that can be used to install and control a service.
+  # A list of packages can be supplied which will be installed in sequential order.
+  # The implementation uses: "sudo service <service_name> start / stop / restart"
+  # to control the service operation
+  ##################################################################################
 
   cloudify.nodes.ServiceInstaller:
     derived_from: cloudify.nodes.SoftwareComponent
     properties:
       name:
-        default: 'Service Node'
+        default: 'Service_Node'
       version:
         default: 1
       package_list:
@@ -94,12 +116,12 @@ node_types:
         description: >
           Provide a list of packages, RPM or DEB files to install
       service_name:
-        default: {  get_property: [ cloudify.nodes.ServiceInstaller,  name ] }
+        default: {  get_property: [ SELF,  name ] }
         description: >
           Name of the service to manage
+      service_configuration:
     interfaces:
       cloudify.interfaces.lifecycle:
-
         create:
           implementation: package_installer.package_installer_plugin.tasks.install_packages
           inputs:
@@ -107,7 +129,6 @@ node_types:
               default: {  get_property: [ SELF,  package_list ] }
               description: >
                 Provide a list of RPM or DEB file URLs to install
-
         start:
           implementation: package_installer.package_installer_plugin.service_tasks.start_service
           inputs:
@@ -115,7 +136,6 @@ node_types:
               default: {  get_property: [ SELF,  service_name ] }
               description: >
                 Name of the service to start
-
         stop:
           implementation: package_installer.package_installer_plugin.service_tasks.stop_service
           inputs:
@@ -123,6 +143,11 @@ node_types:
               default: {  get_property: [ SELF,  service_name ] }
               description: >
                 Name of the service to stop
+
+      ##################################################################################
+      # Service Command mappings
+      ##################################################################################
+
       service.commands:
         start_service:
             implementation: package_installer.package_installer_plugin.service_tasks.start_service
@@ -130,6 +155,11 @@ node_types:
             implementation: package_installer.package_installer_plugin.service_tasks.stop_service
         restart_service:
             implementation: package_installer.package_installer_plugin.service_tasks.restart_service
+
+      ##################################################################################
+      # Package Command mappings
+      ##################################################################################
+
       package.commands:
         start_service:
             implementation: package_installer.package_installer_plugin.tasks.install_packages
@@ -137,6 +167,12 @@ node_types:
             implementation: package_installer.package_installer_plugin.tasks.remove_packages
         restart_service:
             implementation: package_installer.package_installer_plugin.tasks.reinstall_packages
+
+
+  ##################################################################################
+  # Application Installer Type
+  # TODO: Implementation
+  ##################################################################################
 
   cloudify.nodes.AppInstaller:
     derived_from: cloudify.nodes.ApplicationModule
@@ -156,7 +192,12 @@ node_types:
         description: >
           The application binary to deploy
 
-
+ ##################################################################################
+ # Tomcat Server Type
+ # A Tomcat server type that can be used to install and control a tomcat instance.
+ # The implementation uses: "sudo service <service_name> start / stop / restart"
+ # to control the service operation
+ ##################################################################################
   cloudify.nodes.TomcatServer:
     derived_from: cloudify.nodes.ServiceInstaller
     properties:
@@ -171,6 +212,11 @@ node_types:
       service_name:
         default: 'tomcat'
 
+  ##################################################################################
+  # Application Installer Type
+  # TODO: Implementation
+  ##################################################################################
+
   cloudify.nodes.TomcatApplication:
     derived_from: cloudify.nodes.AppInstaller
     properties:
@@ -183,6 +229,13 @@ node_types:
       application_binary:
         description: >
           WAR file to deploy
+
+ ##################################################################################
+ # Elasticsearch Type
+ # Elasticsearch type that can be used to install and control an Elasticsearch node.
+ # The implementation uses: "sudo service <service_name> start / stop / restart"
+ # to control the service operation
+ ##################################################################################
 
   cloudify.nodes.Elasticsearch:
     derived_from: cloudify.nodes.ServiceInstaller
@@ -199,3 +252,16 @@ node_types:
           - 'https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.7.1.noarch.rpm'
       service_name:
         default: 'elasticsearch'
+
+relationships:
+  tomcat_server.contained_in:
+    derived_from: cloudify.relationships.contained_in
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        postconfigure:
+          implementation: package_installer.package_installer_plugin.service_tasks.stop_service
+          inputs:
+            service_name:
+              default: {  get_property: [ SELF,  service_name ] }
+              description: >
+                Name of the service to stop
