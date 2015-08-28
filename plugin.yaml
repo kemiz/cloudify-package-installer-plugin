@@ -64,7 +64,7 @@ workflows:
         mapping: package_installer.package_installer_plugin.service_tasks.start_service
         parameters:
             service_name:
-            default: { get_property: [ cloudify.nodes.ServiceInstaller,  service_name ] }
+              default: { get_property: [ cloudify.nodes.ServiceInstaller,  service_name ] }
               description: >
                 Name of the service to start
             node_id:
