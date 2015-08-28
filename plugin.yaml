@@ -126,7 +126,7 @@ node_types:
 
 
   cloudify.nodes.AppInstaller:
-    derived_from: cloudify.nodes.SoftwareComponent
+    derived_from: cloudify.nodes.ApplicationModule
     properties:
       name:
         default: 'Application Node'
