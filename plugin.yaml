@@ -1,5 +1,6 @@
 ##################################################################################
 # Cloudify Package Installer Plugin.
+# Author: kemi
 ##################################################################################
 
 plugins:
@@ -7,20 +8,181 @@ plugins:
     executor: host_agent
     source: https://github.com/kemiz/cloudify-package-installer-plugin/archive/master.zip
 
+#workflows:
+#
+#    install_packages:
+#        mapping: package_installer.package_installer_plugin.tasks.install_packages
+#        parameters:
+#            package_list:
+#              description: >
+#                Provide a list of RPM or DEB file URLs to install
+#            node_id:
+#              description: >
+#                The node id to execute workflow on
+#
+#    remove_packages:
+#        mapping: package_installer.package_installer_plugin.tasks.remove_packages
+#        parameters:
+#            package_list:
+#              description: >
+#                Provide a list of RPM or DEB file URLs to uninstall
+#            node_id:
+#              description: >
+#                The node id to execute workflow on
+#
+#    reinstall_packages:
+#        mapping: package_installer.package_installer_plugin.tasks.reinstall_packages
+#        parameters:
+#            package_list:
+#              description: >
+#                Provide a list of RPM or DEB file URLs to reinstall
+#            node_id:
+#              description: >
+#                The node id to execute workflow on
+#
+#    upgrade_packages:
+#        mapping: package_installer.package_installer_plugin.tasks.reinstall_packages
+#        parameters:
+#            package_list:
+#              description: >
+#                Provide a list of RPM or DEB file URLs to reinstall
+#            node_id:
+#              description: >
+#                The node id to execute workflow on
+#
+#
+#    start_service:
+#        mapping: package_installer.package_installer_plugin.service_tasks.start_service
+#        parameters:
+#            service_name:
+#              description: >
+#                Name of the service to start
+#            node_id:
+#              description: >
+#                The node id to execute workflow on
+#
+#    stop_service:
+#        mapping: package_installer.package_installer_plugin.service_tasks.stop_service
+#        parameters:
+#            service_name:
+#              description: >
+#                Name of the service to stop
+#            node_id:
+#              description: >
+#                The node id to execute workflow on
+#
+#    restart_service:
+#        mapping: package_installer.package_installer_plugin.service_tasks.restart_service
+#        parameters:
+#            service_name:
+#              description: >
+#                Name of the service to restart
+#            node_id:
+#              description: >
+#                The node id to execute workflow on
 node_types:
 
-  cloudify.nodes.PackageInstaller:
+  cloudify.nodes.ServiceInstaller:
     derived_from: cloudify.nodes.SoftwareComponent
+    properties:
+      name:
+        default: 'Service Node'
+      version:
+        default: 1
+      package_list:
+        default: None
+        description: >
+          Provide a list of packages, RPM or DEB files to install
+      service_name:
+        default: {  get_property: [ cloudify.nodes.ServiceInstaller,  name ] }
+        description: >
+          Name of the service to manage
     interfaces:
       cloudify.interfaces.lifecycle:
+
         create:
-          implementation: package_installer.package_installer_plugin.tasks.install
+          implementation: package_installer.package_installer_plugin.tasks.install_packages
           inputs:
-            install_from_repo:
-              default: True
-              type: boolean
-              description: >
-                Install from repository or URL
             package_list:
+              default: {  get_property: [ SELF,  package_list ] }
               description: >
                 Provide a list of RPM or DEB file URLs to install
+
+        start:
+          implementation: package_installer.package_installer_plugin.service_tasks.start_service
+          inputs:
+            service_name:
+              default: {  get_property: [ SELF,  service_name ] }
+              description: >
+                Name of the service to start
+
+        stop:
+          implementation: package_installer.package_installer_plugin.service_tasks.stop_service
+          inputs:
+            service_name:
+              default: {  get_property: [ SELF,  service_name ] }
+              description: >
+                Name of the service to stop
+
+
+  cloudify.nodes.AppInstaller:
+    derived_from: cloudify.nodes.SoftwareComponent
+    properties:
+      name:
+        default: 'Application Node'
+      version:
+        default: '1.0'
+      package_list:
+        default: None
+        description: >
+          Provide a list of packages, RPM or DEB files to install
+      app_server:
+        description: >
+          Name of the application server hosting this app
+      application_binary:
+        description: >
+          The application binary to deploy
+
+
+  cloudify.nodes.TomcatServer:
+    derived_from: cloudify.nodes.ServiceInstaller
+    properties:
+      name:
+        default: 'Tomcat Server'
+      version:
+        default: 7
+      package_list:
+        default:
+          - 'openjdk-7-jdk'
+          - 'tomcat7'
+      service_name:
+        default: 'tomcat'
+
+  cloudify.nodes.TomcatApplication:
+    derived_from: cloudify.nodes.AppInstaller
+    properties:
+      name:
+        default: 'Application'
+      version:
+        default: '1.0'
+      app_server:
+        default: 'tomcat'
+      application_binary:
+        description: >
+          WAR file to deploy
+
+  cloudify.nodes.Elasticsearch:
+    derived_from: cloudify.nodes.ServiceInstaller
+    properties:
+      service:
+        default: 'elasticsearch'
+      version:
+        default: '1.7.1'
+      package_list:
+        default:
+          # Install Java
+          - 'openjdk-7-jdk'
+          # Install Elasticsearch
+          - 'https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.7.1.noarch.rpm'
+      service_name:
+        default: 'elasticsearch'

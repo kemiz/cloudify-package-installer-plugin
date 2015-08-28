@@ -1,17 +1,4 @@
-########
-# Copyright (c) 2015 GigaSpaces Technologies Ltd. All rights reserved
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#        http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-#    * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#    * See the License for the specific language governing permissions and
-#    * limitations under the License.
+__author__ = 'kemi'
 
 # Built in Imports
 import requests
@@ -19,6 +6,7 @@ import platform
 import tempfile
 
 # Cloudify Imports
+from package_installer_plugin.constants import *
 from utils import run
 from cloudify import ctx
 from cloudify import exceptions
@@ -26,7 +14,7 @@ from cloudify.decorators import operation
 
 
 @operation
-def install(package_list, install_from_repo, **_):
+def install_packages(package_list, **_):
     """ Installs a list of packages """
 
     ctx.logger.info('Attempting to install packages')
@@ -34,54 +22,53 @@ def install(package_list, install_from_repo, **_):
     distro_lower = [x.lower() for x in distro]
     ctx.logger.info('Working environment: {0} {2} v{1}'.format(distro[0], distro[1], distro[2]))
 
-    # Install from repository (yum / apt)
-    if install_from_repo:
-        for package_to_install in package_list:
+    for package_to_install in package_list:
+        # Install from repository (yum / apt)
+        if 'http' not in package_to_install:
             ctx.logger.info('Installing from repository: {0}'.format(package_to_install))
-            _install_from_repo(package=package_to_install, platform=distro_lower)
 
-    # Install from package
-    else:
-        for package_to_install in package_list:
+            install_command = _get_install_command(
+                distro=distro_lower,
+                install_from_repo=True,
+                package=package_to_install)
+
+            # TODO: apt-get update should not get called every install
+            run(APT_UPDATE_COMMAND)
+
+        # Install from package
+        else:
             ctx.logger.info('Installing from URL: {0}'.format(package_to_install))
-            _install_from_repo(package=package_to_install, platform=distro_lower)
+
+            _, package_file = tempfile.mkstemp()
+            _download_package(package_file, package_to_install)
+
+            install_command = _get_install_command(
+                distro=distro_lower,
+                install_from_repo=False,
+                package=package_to_install)
+
+        ctx.logger.info('Running command: {0}'.format(install_command))
+        run(install_command)
 
 
-def _install_from_repo(platform, package):
-    """ installs a package from repository """
-
-    # Install package
-    if 'ubuntu' in platform:
-        # TODO: apt-get update should not get called every install
-        run('sudo apt-get update')
-        install_command = 'sudo apt-get -qq --no-upgrade install {0}'.format(package)
-    elif 'centos' in platform:
-        install_command = 'sudo yum -y -q install {0}'.format(package)
+def _get_install_command(distro, install_from_repo, package):
+    if 'ubuntu' in distro:
+        if install_from_repo:
+            install_command = APT_COMMAND + INSTALL + '{0}'.format(package)
+        else:
+            install_command = DPKG_COMMAND + '{0}'.format(package)
+        ctx.logger.info('Installing on Ubuntu: ' + install_command)
+    elif 'centos' in distro:
+        if install_from_repo:
+            install_command = YUM_COMMAND + INSTALL + '{0}'.format(package)
+        else:
+            install_command = YUM_COMMAND + INSTALL + '{0}'.format(package)
+        ctx.logger.info('Installing on CentOS: ' + install_command)
     else:
         raise exceptions.NonRecoverableError(
-            'Only Centos and Ubuntu supported.')
+            'Only CentOS and Ubuntu supported.')
 
-    run(install_command)
-
-
-def _install_from_url(platform, package_url):
-    """ installs a package from repository """
-
-    # Download package
-    _, package_file = tempfile.mkstemp()
-
-    # Install package
-    if 'ubuntu' in platform:
-        install_command = 'sudo dpkg -i {0}'.format(package_file)
-    elif 'centos' in platform:
-        install_command = 'sudo yum install -y {0}'.format(package_file)
-    else:
-        raise exceptions.NonRecoverableError(
-            'Only Centos and Ubuntu supported.')
-
-    _download_package(package_file, package_url)
-
-    run(install_command)
+    return install_command
 
 
 def _download_package(package_file, url):
@@ -95,3 +82,19 @@ def _download_package(package_file, url):
             if chunk:
                 f.write(chunk)
                 f.flush()
+
+
+@operation
+def remove_package(package_list, **kwargs):
+    """ removes a package from a given node """
+
+    if 'ubuntu' in platform:
+        # TODO: apt-get update should not get called every install
+        run(APT_UPDATE_COMMAND)
+        remove_command = APT_COMMAND + REMOVE + '{0}'.format(package_list)
+    elif 'centos' in platform:
+        remove_command = YUM_COMMAND + REMOVE + '{0}'.format(package_list)
+    else:
+        raise exceptions.NonRecoverableError(
+            'Only Centos and Ubuntu supported.')
+    run(remove_command)
