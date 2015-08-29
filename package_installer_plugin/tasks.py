@@ -24,11 +24,12 @@ def install_packages(config, **_):
 
     ctx.logger.info(config)
 
-    if config['custom_repo'] != 'None':
-        _add_custom_repo(config['custom_repo'], distro)
+    if 'custom_repo' in config:
+        _add_custom_repo(config['custom_repo'], distro_lower)
 
     package_list = config['package_list']
     for package_to_install in package_list:
+
         # Install from repository (yum / apt)
         if 'http' not in package_to_install:
             ctx.logger.info('Installing from repository: {0}'.format(package_to_install))
