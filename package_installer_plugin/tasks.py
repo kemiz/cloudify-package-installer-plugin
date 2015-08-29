@@ -14,7 +14,7 @@ from cloudify.decorators import operation
 
 
 @operation
-def install_packages(package_list, **_):
+def install_packages(config, **_):
     """ Installs a list of packages """
 
     ctx.logger.info('Attempting to install packages')
@@ -22,6 +22,12 @@ def install_packages(package_list, **_):
     distro_lower = [x.lower() for x in distro]
     ctx.logger.info('Working environment: {0} {2} v{1}'.format(distro[0], distro[1], distro[2]))
 
+    ctx.logger.info(config)
+
+    if config['custom_repo'] != 'None':
+        _add_custom_repo(config['custom_repo'], distro)
+
+    package_list = config['package_list']
     for package_to_install in package_list:
         # Install from repository (yum / apt)
         if 'http' not in package_to_install:
@@ -49,6 +55,23 @@ def install_packages(package_list, **_):
 
         ctx.logger.info('Running command: {0}'.format(install_command))
         run(install_command)
+
+
+def _add_custom_repo(repo, distro):
+    if 'ubuntu' in distro:
+        key_server = repo['apt', 'key_server']
+        add_key_server_command = 'sudo apt-key adv --keyserver ' + key_server
+        run(add_key_server_command)
+        add_repo_cmd = repo['apt', 'list_file']
+        run(add_repo_cmd)
+    elif 'centos' in distro:
+        repo_name = repo['yum', 'name']
+        repo_entry = repo['yum', 'entry']
+        add_repo_cmd = 'echo ' + repo_entry + ' | sudo tee /etc/yum.repos.d/{0}.repo'.format(repo_name)
+    else:
+        raise exceptions.NonRecoverableError(
+            'Only CentOS and Ubuntu supported.')
+    run(add_repo_cmd)
 
 
 def _get_install_command(distro, install_from_repo, package):

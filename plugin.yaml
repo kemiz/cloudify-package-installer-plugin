@@ -64,7 +64,7 @@ workflows:
         mapping: package_installer.package_installer_plugin.service_tasks.start_service
         parameters:
             service_name:
-              default: { get_property: [ cloudify.nodes.ServiceInstaller,  service_name ] }
+              default: { get_property: [ cloudify.nodes.ServiceInstaller,  config, service_name ] }
               description: >
                 Name of the service to start
             node_id:
@@ -75,7 +75,7 @@ workflows:
         mapping: package_installer.package_installer_plugin.service_tasks.stop_service
         parameters:
             service_name:
-              default: { get_property: [ cloudify.nodes.ServiceInstaller,  service_name ] }
+              default: { get_property: [ cloudify.nodes.ServiceInstaller,  config, service_name ] }
               description: >
                 Name of the service to stop
             node_id:
@@ -86,7 +86,7 @@ workflows:
         mapping: package_installer.package_installer_plugin.service_tasks.restart_service
         parameters:
             service_name:
-              default: { get_property: [ cloudify.nodes.ServiceInstaller,  service_name ] }
+              default: { get_property: [ cloudify.nodes.ServiceInstaller, config,  service_name ] }
               description: >
                 Name of the service to restart
             node_id:
@@ -111,38 +111,49 @@ node_types:
         default: 'Service_Node'
       version:
         default: 1
-      package_list:
-        default: None
-        description: >
-          Provide a list of packages, RPM or DEB files to install
-      service_name:
-        default: {  get_property: [ SELF,  name ] }
-        description: >
-          Name of the service to manage
-      service_configuration:
+      config:
+        default:
+          package_list:
+            default: None
+            description: >
+              Provide a list of packages, RPM or DEB files to install
+          custom_repo:
+            default:
+              yum:
+                default: None
+              apt:
+                default:
+                  key_server:
+                    default: None
+                  list_file:
+                    default: None
+          service_name:
+            default: { get_property: [ SELF,  name ] }
+            description: >
+              Name of the service to manage
     interfaces:
       cloudify.interfaces.lifecycle:
         create:
           implementation: package_installer.package_installer_plugin.tasks.install_packages
           inputs:
-            package_list:
-              default: {  get_property: [ SELF,  package_list ] }
+            config:
+              default: { get_property: [ SELF,  config ] }
               description: >
-                Provide a list of RPM or DEB file URLs to install
+                The service configuration
         start:
           implementation: package_installer.package_installer_plugin.service_tasks.start_service
           inputs:
-            service_name:
-              default: {  get_property: [ SELF,  service_name ] }
+            config:
+              default: { get_property: [ SELF,  config ] }
               description: >
-                Name of the service to start
+                The service configuration
         stop:
           implementation: package_installer.package_installer_plugin.service_tasks.stop_service
           inputs:
-            service_name:
-              default: {  get_property: [ SELF,  service_name ] }
+            config:
+              default: { get_property: [ SELF,  config ] }
               description: >
-                Name of the service to stop
+                The service configuration
 
       ##################################################################################
       # Service Command mappings
@@ -192,28 +203,117 @@ node_types:
         description: >
           The application binary to deploy
 
+
+
+##################################################################################
+# Service Types
+##################################################################################
+
  ##################################################################################
  # Tomcat Server Type
  # A Tomcat server type that can be used to install and control a tomcat instance.
  # The implementation uses: "sudo service <service_name> start / stop / restart"
  # to control the service operation
  ##################################################################################
+
   cloudify.nodes.TomcatServer:
     derived_from: cloudify.nodes.ServiceInstaller
     properties:
       name:
-        default: 'Tomcat Server'
+        default: 'tomcat'
       version:
         default: 7
-      package_list:
+      config:
         default:
-          - 'openjdk-7-jdk'
-          - 'tomcat7'
-      service_name:
-        default: 'tomcat'
+          package_list:
+            default:
+              - 'openjdk-7-jdk'
+              - 'tomcat7'
+          service_name: 'tomcat'
+
+ ##################################################################################
+ # Elasticsearch Type
+ # Elasticsearch type that can be used to install and control an Elasticsearch node.
+ # The implementation uses: "sudo service <service_name> start / stop / restart"
+ # to control the service operation
+ ##################################################################################
+
+  cloudify.nodes.Elasticsearch:
+    derived_from: cloudify.nodes.ServiceInstaller
+    properties:
+      name:
+        default: 'elasticsearch'
+      version:
+        default: '1.7.1'
+      config:
+        default:
+          package_list:
+            default:
+              # Install Java
+              - 'openjdk-7-jdk'
+              # Install Elasticsearch
+              - 'https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.7.1.noarch.rpm'
+          service_name: 'elasticsearch'
 
   ##################################################################################
-  # Application Installer Type
+  # MongoDB Type
+  # MongoDB type that can be used to install and control an MongoDB node.
+  # The implementation uses: "sudo service <service_name> start / stop / restart"
+  # to control the service operation
+  ##################################################################################
+
+  cloudify.nodes.MongoDB:
+    derived_from: cloudify.nodes.ServiceInstaller
+    properties:
+      name:
+        default: 'mongod'
+      version:
+        default: '3.0'
+      config:
+        default:
+          custom_repo:
+            default:
+              yum:
+                default: '[mongodb-org-3.0]
+                          name=MongoDB Repository
+                          baseurl=https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/3.0/x86_64/
+                          gpgcheck=0
+                          enabled=1'
+              apt:
+                default:
+                  key_server:
+                    default: 'hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10'
+                  list_file:
+                    default: 'echo "deb http://repo.mongodb.org/apt/ubuntu "$(lsb_release -sc)"/mongodb-org/3.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.0.list'
+          package_list:
+            default:
+              - 'mongodb-org'
+          service_name:
+            default: 'mongod'
+
+ ##################################################################################
+ # Postgres Type
+ # Postgres type that can be used to install and control a Postgres node.
+ # The implementation uses: "sudo service <service_name> start / stop / restart"
+ # to control the service operation
+ ##################################################################################
+
+  cloudify.nodes.Postgres:
+    derived_from: cloudify.nodes.ServiceInstaller
+    properties:
+      name:
+        default: 'postgres'
+      version:
+        default: '9.4'
+      config:
+        default:
+          package_list:
+            default:
+              - 'postgresql-9.4'
+          service_name: 'postgres'
+
+  ##################################################################################
+  # Tomcat Application Type
   # TODO: Implementation
   ##################################################################################
 
@@ -230,38 +330,19 @@ node_types:
         description: >
           WAR file to deploy
 
- ##################################################################################
- # Elasticsearch Type
- # Elasticsearch type that can be used to install and control an Elasticsearch node.
- # The implementation uses: "sudo service <service_name> start / stop / restart"
- # to control the service operation
- ##################################################################################
-
-  cloudify.nodes.Elasticsearch:
-    derived_from: cloudify.nodes.ServiceInstaller
-    properties:
-      service:
-        default: 'elasticsearch'
-      version:
-        default: '1.7.1'
-      package_list:
-        default:
-          # Install Java
-          - 'openjdk-7-jdk'
-          # Install Elasticsearch
-          - 'https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.7.1.noarch.rpm'
-      service_name:
-        default: 'elasticsearch'
 
 relationships:
-  tomcat_server.contained_in:
+  service.contained_in:
     derived_from: cloudify.relationships.contained_in
+    properties:
+      service_name:
+        default: 'service'
     target_interfaces:
       cloudify.interfaces.relationship_lifecycle:
         postconfigure:
-          implementation: package_installer.package_installer_plugin.service_tasks.stop_service
+          implementation: package_installer.package_installer_plugin.service_relationships.contained_in
           inputs:
             service_name:
-              default: {  get_property: [ SELF,  service_name ] }
+              default: { get_property: [ SELF,  service_name ] }
               description: >
                 Name of the service to stop
