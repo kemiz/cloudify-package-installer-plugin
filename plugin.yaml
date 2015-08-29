@@ -178,31 +178,6 @@ node_types:
             implementation: package_installer.package_installer_plugin.tasks.reinstall_packages
 
 
-  ##################################################################################
-  # Application Installer Type
-  # TODO: Implementation
-  ##################################################################################
-
-  cloudify.nodes.AppInstaller:
-    derived_from: cloudify.nodes.ApplicationModule
-    properties:
-      name:
-        default: 'Application Node'
-      version:
-        default: '1.0'
-      package_list:
-        default: None
-        description: >
-          Provide a list of packages, RPM or DEB files to install
-      app_server:
-        description: >
-          Name of the application server hosting this app
-      application_binary:
-        description: >
-          The application binary to deploy
-
-
-
 ##################################################################################
 # Service Types
 ##################################################################################
@@ -247,7 +222,7 @@ node_types:
           package_list:
             # Install Java
             - 'openjdk-7-jdk'
-            # Install Elasticsearch
+            # Install Elasticsearch from URL
             - 'https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.7.1.noarch.rpm'
 
   ##################################################################################
@@ -298,6 +273,34 @@ node_types:
         default:
           package_list:
             - 'postgresql-9.4'
+
+##################################################################################
+# Application Types
+##################################################################################
+
+  ##################################################################################
+  # Application Installer Type
+  # TODO: Implementation
+  ##################################################################################
+
+  cloudify.nodes.AppInstaller:
+    derived_from: cloudify.nodes.ApplicationModule
+    properties:
+      name:
+        default: 'Application Node'
+      version:
+        default: '1.0'
+      package_list:
+        default: None
+        description: >
+          Provide a list of packages, RPM or DEB files to install
+      app_server:
+        description: >
+          Name of the application server hosting this app
+      application_binary:
+        description: >
+          The application binary to deploy
+
 
   ##################################################################################
   # Tomcat Application Type
