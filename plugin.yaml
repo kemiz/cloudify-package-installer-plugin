@@ -107,30 +107,28 @@ node_types:
   cloudify.nodes.ServiceInstaller:
     derived_from: cloudify.nodes.SoftwareComponent
     properties:
-      name:
+      service_name:
         default: 'Service_Node'
       version:
         default: 1
       config:
-        default:
-          package_list:
-            default: None
-            description: >
-              Provide a list of packages, RPM or DEB files to install
-          custom_repo:
-            default:
-              yum:
-                default: None
-              apt:
-                default:
-                  key_server:
-                    default: None
-                  list_file:
-                    default: None
-          service_name:
-            default: { get_property: [ SELF,  name ] }
-            description: >
-              Name of the service to manage
+        default: None
+#          # list of packages, RPM or DEB files to install
+#          package_list:
+#          # customer repo to add to list
+#          custom_repo:
+#              # yum repository entry
+#              yum:
+#              apt:
+#                # apt key server to add
+#                key_server:
+#                # add command
+#                list_file:
+#          # the name that will be used to start / stop this service
+#          service_name:
+#            default: { get_property: [ SELF,  name ] }
+#            description: >
+#              Name of the service to manage
     interfaces:
       cloudify.interfaces.lifecycle:
         create:
@@ -143,17 +141,17 @@ node_types:
         start:
           implementation: package_installer.package_installer_plugin.service_tasks.start_service
           inputs:
-            config:
-              default: { get_property: [ SELF,  config ] }
+            service_name:
+              default: { get_property: [ SELF,  service_name ] }
               description: >
-                The service configuration
+                The service name
         stop:
           implementation: package_installer.package_installer_plugin.service_tasks.stop_service
           inputs:
-            config:
-              default: { get_property: [ SELF,  config ] }
+            service_name:
+              default: { get_property: [ SELF,  service_name ] }
               description: >
-                The service configuration
+                The service name
 
       ##################################################################################
       # Service Command mappings
@@ -219,7 +217,7 @@ node_types:
   cloudify.nodes.TomcatServer:
     derived_from: cloudify.nodes.ServiceInstaller
     properties:
-      name:
+      service_name:
         default: 'tomcat'
       version:
         default: 7
@@ -229,7 +227,6 @@ node_types:
             default:
               - 'openjdk-7-jdk'
               - 'tomcat7'
-          service_name: 'tomcat'
 
  ##################################################################################
  # Elasticsearch Type
@@ -241,7 +238,7 @@ node_types:
   cloudify.nodes.Elasticsearch:
     derived_from: cloudify.nodes.ServiceInstaller
     properties:
-      name:
+      service_name:
         default: 'elasticsearch'
       version:
         default: '1.7.1'
@@ -252,7 +249,6 @@ node_types:
             - 'openjdk-7-jdk'
             # Install Elasticsearch
             - 'https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.7.1.noarch.rpm'
-          service_name: 'elasticsearch'
 
   ##################################################################################
   # MongoDB Type
@@ -264,24 +260,25 @@ node_types:
   cloudify.nodes.MongoDB:
     derived_from: cloudify.nodes.ServiceInstaller
     properties:
-      name:
+      service_name:
         default: 'mongod'
       version:
         default: '3.0'
       config:
         default:
           custom_repo:
-            yum: '[mongodb-org-3.0]
-                  name=MongoDB Repository
-                  baseurl=https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/3.0/x86_64/
-                  gpgcheck=0
-                  enabled=1'
+            yum:
+              name: 'mongodb-org-3.0'
+              entry: '[mongodb-org-3.0]
+                      name=MongoDB Repository
+                      baseurl=https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/3.0/x86_64/
+                      gpgcheck=0
+                      enabled=1'
             apt:
               key_server: 'hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10'
               list_file: 'echo "deb http://repo.mongodb.org/apt/ubuntu "$(lsb_release -sc)"/mongodb-org/3.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.0.list'
           package_list:
             - 'mongodb-org'
-          service_name: 'mongod'
 
  ##################################################################################
  # Postgres Type
@@ -293,7 +290,7 @@ node_types:
   cloudify.nodes.Postgres:
     derived_from: cloudify.nodes.ServiceInstaller
     properties:
-      name:
+      service_name:
         default: 'postgres'
       version:
         default: '9.4'
@@ -301,7 +298,6 @@ node_types:
         default:
           package_list:
             - 'postgresql-9.4'
-          service_name: 'postgres'
 
   ##################################################################################
   # Tomcat Application Type

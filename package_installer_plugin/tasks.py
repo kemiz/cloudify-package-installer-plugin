@@ -60,14 +60,14 @@ def install_packages(config, **_):
 
 def _add_custom_repo(repo, distro):
     if 'ubuntu' in distro:
-        key_server = repo['apt', 'key_server']
+        key_server = repo['apt']['key_server']
         add_key_server_command = 'sudo apt-key adv --keyserver ' + key_server
         ctx.logger.info('Adding key server: {0}'.format(add_key_server_command))
         run(add_key_server_command)
-        add_repo_cmd = repo['apt', 'list_file']
+        add_repo_cmd = repo['apt']['list_file']
     elif 'centos' in distro:
-        repo_name = repo['yum', 'name']
-        repo_entry = repo['yum', 'entry']
+        repo_name = repo['yum']['name']
+        repo_entry = repo['yum']['entry']
         add_repo_cmd = 'echo ' + repo_entry + ' | sudo tee /etc/yum.repos.d/{0}.repo'.format(repo_name)
     else:
         raise exceptions.NonRecoverableError(
