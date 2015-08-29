@@ -52,7 +52,7 @@ def install_packages(config, **_):
             install_command = _get_install_command(
                 distro=distro_lower,
                 install_from_repo=False,
-                package=package_to_install)
+                package=package_file[1])
 
         ctx.logger.info('Running command: {0}'.format(install_command))
         run(install_command)
