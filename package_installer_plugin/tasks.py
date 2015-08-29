@@ -40,7 +40,7 @@ def install_packages(config, **_):
                 package=package_to_install)
 
             # TODO: apt-get update should not get called every install
-            run(apt_get_update)
+            run(APT_GET_UPDATE)
 
         # Install from package
         else:
@@ -70,33 +70,44 @@ def _add_custom_repo(repo, distro):
         run(add_key_server_command)
 
         repo_entry = repo['apt']['entry']
-        source_list_file = open('/etc/apt/sources.list.d/{0}.list'.format(repo_name), "wb")
+        temp_file = '{0}.list'.format(repo_name)
+        file_path = APT_SOURCELIST_DIR
+
+        run('sudo mv ' + temp_file + APT_SOURCELIST_DIR + temp_file)
 
     elif 'centos' in distro:
 
         repo_entry = repo['yum']['entry']
-        source_list_file = open('/etc/yum.repos.d/{0}.repo'.format(repo_name), "wb")
+        temp_file = '{0}.repo'.format(repo_name)
+        file_path = YUM_REPOS_DIR
 
     else:
         raise exceptions.NonRecoverableError(
             'Only CentOS and Ubuntu supported.')
 
+    ctx.logger.debug('Opening temp file: {0}'.format(temp_file))
+    source_list_file = open('/tmp/' + temp_file, "wb")
+    ctx.logger.info('Adding entry to file: {0}'.format(repo_entry))
     source_list_file.write(repo_entry)
     source_list_file.close()
+
+    move_command = 'sudo mv /tmp/' + temp_file + ' ' + file_path + temp_file
+    ctx.logger.info('Moving file to correct location: {0}'.format(move_command))
+    run(move_command)
 
 
 def _get_install_command(distro, install_from_repo, package):
     if 'ubuntu' in distro:
         if install_from_repo:
-            install_command = apt_get + install + '{0}'.format(package)
+            install_command = APT_GET + INSTALL + '{0}'.format(package)
         else:
-            install_command = dpkg + '{0}'.format(package)
+            install_command = DPKG + '{0}'.format(package)
         ctx.logger.info('Installing on Ubuntu: ' + install_command)
     elif 'centos' in distro:
         if install_from_repo:
-            install_command = yum + install + package
+            install_command = YUM + INSTALL + package
         else:
-            install_command = yum + install + '{0}'.format(package)
+            install_command = YUM + INSTALL + '{0}'.format(package)
         ctx.logger.info('Installing on CentOS: ' + install_command)
     else:
         raise exceptions.NonRecoverableError(
@@ -124,10 +135,10 @@ def remove_package(package_list, **_):
 
     if 'ubuntu' in platform:
         # TODO: apt-get update should not get called every install
-        run(apt_get_update)
-        remove_command = apt_get + remove + '{0}'.format(package_list)
+        run(APT_GET_UPDATE)
+        remove_command = APT_GET + REMOVE + '{0}'.format(package_list)
     elif 'centos' in platform:
-        remove_command = yum + remove + '{0}'.format(package_list)
+        remove_command = YUM + REMOVE + '{0}'.format(package_list)
     else:
         raise exceptions.NonRecoverableError(
             'Only Centos and Ubuntu supported.')

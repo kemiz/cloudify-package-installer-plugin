@@ -21,7 +21,7 @@ def remove_packages(package, node_id, **_):
             break
 
     ctx.logger.info("executing on instance {0}".format(instance))
-    operation_path = package_commands + 'remove_packages'
+    operation_path = PACKAGE_COMMANDS + 'remove_packages'
     instance.execute_operation(operation_path, package)
 
 
@@ -41,5 +41,5 @@ def install_packages(package, node_id, **_):
             break
 
     ctx.logger.info("executing on instance {0}".format(instance))
-    operation_path = package_commands + 'install_packages'
+    operation_path = PACKAGE_COMMANDS + 'install_packages'
     instance.execute_operation(operation_path, package)
