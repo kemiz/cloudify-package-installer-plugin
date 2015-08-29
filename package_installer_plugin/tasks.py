@@ -62,9 +62,9 @@ def _add_custom_repo(repo, distro):
     if 'ubuntu' in distro:
         key_server = repo['apt', 'key_server']
         add_key_server_command = 'sudo apt-key adv --keyserver ' + key_server
+        ctx.logger.info('Adding key server: {0}'.format(add_key_server_command))
         run(add_key_server_command)
         add_repo_cmd = repo['apt', 'list_file']
-        run(add_repo_cmd)
     elif 'centos' in distro:
         repo_name = repo['yum', 'name']
         repo_entry = repo['yum', 'entry']
@@ -72,6 +72,7 @@ def _add_custom_repo(repo, distro):
     else:
         raise exceptions.NonRecoverableError(
             'Only CentOS and Ubuntu supported.')
+    ctx.logger.info('Running command: {0}'.format(add_repo_cmd))
     run(add_repo_cmd)
 
 
