@@ -110,7 +110,7 @@ def _download_package(package_file, url):
 
 
 @operation
-def remove_package(package_list, **kwargs):
+def remove_package(package_list, **_):
     """ removes a package from a given node """
 
     if 'ubuntu' in platform:

@@ -248,11 +248,10 @@ node_types:
       config:
         default:
           package_list:
-            default:
-              # Install Java
-              - 'openjdk-7-jdk'
-              # Install Elasticsearch
-              - 'https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.7.1.noarch.rpm'
+            # Install Java
+            - 'openjdk-7-jdk'
+            # Install Elasticsearch
+            - 'https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.7.1.noarch.rpm'
           service_name: 'elasticsearch'
 
   ##################################################################################
@@ -272,24 +271,17 @@ node_types:
       config:
         default:
           custom_repo:
-            default:
-              yum:
-                default: '[mongodb-org-3.0]
-                          name=MongoDB Repository
-                          baseurl=https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/3.0/x86_64/
-                          gpgcheck=0
-                          enabled=1'
-              apt:
-                default:
-                  key_server:
-                    default: 'hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10'
-                  list_file:
-                    default: 'echo "deb http://repo.mongodb.org/apt/ubuntu "$(lsb_release -sc)"/mongodb-org/3.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.0.list'
+            yum: '[mongodb-org-3.0]
+                  name=MongoDB Repository
+                  baseurl=https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/3.0/x86_64/
+                  gpgcheck=0
+                  enabled=1'
+            apt:
+              key_server: 'hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10'
+              list_file: 'echo "deb http://repo.mongodb.org/apt/ubuntu "$(lsb_release -sc)"/mongodb-org/3.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.0.list'
           package_list:
-            default:
-              - 'mongodb-org'
-          service_name:
-            default: 'mongod'
+            - 'mongodb-org'
+          service_name: 'mongod'
 
  ##################################################################################
  # Postgres Type
@@ -308,8 +300,7 @@ node_types:
       config:
         default:
           package_list:
-            default:
-              - 'postgresql-9.4'
+            - 'postgresql-9.4'
           service_name: 'postgres'
 
   ##################################################################################
