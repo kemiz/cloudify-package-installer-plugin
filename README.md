@@ -12,24 +12,24 @@ The install operation accepts a configuration that specifies what packages depen
 Below is an example configuration that installs MongoDB through the standard repository by adding a custom sourcelist before obtaining the files:<br><br>
 
   ```
-    config:
-      custom_repo:
+  config:
+    custom_repo:
+      name: 'mongodb-org-3.0'
+      # The definition of the new repository we want to add, both for yum & apt
+      # In this case we are configuring for MongoDB
+      yum:
         name: 'mongodb-org-3.0'
-        # The definition of the new repository we want to add, both for yum & apt
-        # In this case we are configuring for MongoDB
-        yum:
-          name: 'mongodb-org-3.0'
-          entry: '[mongodb-org-3.0]
-                  name=MongoDB Repository
-                  baseurl=https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/3.0/x86_64/
-                  gpgcheck=0
-                  enabled=1'
-        apt:
-          key_server: 'hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10'
-          entry: 'deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.0 multiverse'
-      # The list of packages to install using apt or yum
-      package_list:
-        - 'mongodb-org'
+        entry: '[mongodb-org-3.0]
+                name=MongoDB Repository
+                baseurl=https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/3.0/x86_64/
+                gpgcheck=0
+                enabled=1'
+      apt:
+        key_server: 'hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10'
+        entry: 'deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.0 multiverse'
+    # The list of packages to install using apt or yum
+    package_list:
+      - 'mongodb-org'
   ```
 
 #### Start / Stop Service Operations
