@@ -215,16 +215,15 @@ node_types:
           package_list:
             - 'mongodb-org'
 
-
-  ##################################################################################
-  # Graphana Type
-  # Graphana type that can be used to install and control a Graphana node.
-  # The implementation uses: "sudo service <service_name> start / stop / restart"
-  # to control the service operation
-  ##################################################################################
+##################################################################################
+# Graphana Type
+# Graphana type that can be used to install and control a Graphana node.
+# The implementation uses: "sudo service <service_name> start / stop / restart"
+# to control the service operation
+##################################################################################
 
   cloudify.nodes.Graphana:
-    derived_from: cloudify.nodes.Graphana
+    derived_from: cloudify.nodes.ServiceInstaller
     properties:
       service_name:
         default: 'grafana-server'
@@ -237,12 +236,12 @@ node_types:
             - 'adduser'
             - 'https://grafanarel.s3.amazonaws.com/builds/grafana_2.1.3_amd64.deb'
 
- ##################################################################################
- # Postgres Type
- # Postgres type that can be used to install and control a Postgres node.
- # The implementation uses: "sudo service <service_name> start / stop / restart"
- # to control the service operation
- ##################################################################################
+##################################################################################
+# Postgres Type
+# Postgres type that can be used to install and control a Postgres node.
+# The implementation uses: "sudo service <service_name> start / stop / restart"
+# to control the service operation
+##################################################################################
 
   cloudify.nodes.Postgres:
     derived_from: cloudify.nodes.ServiceInstaller
@@ -256,12 +255,12 @@ node_types:
           package_list:
             - 'postgresql-9.4'
 
- ##################################################################################
- # MySQL Server Type
- # MySQL Server type that can be used to install and control a MySQL node.
- # The implementation uses: "sudo service <service_name> start / stop / restart"
- # to control the service operation
- ##################################################################################
+##################################################################################
+# MySQL Server Type
+# MySQL Server type that can be used to install and control a MySQL node.
+# The implementation uses: "sudo service <service_name> start / stop / restart"
+# to control the service operation
+##################################################################################
 
   cloudify.nodes.MySQLServer:
     derived_from: cloudify.nodes.ServiceInstaller
@@ -275,12 +274,12 @@ node_types:
           package_list:
             - 'mysql-server'
 
- ##################################################################################
- # Redis Type
- # Redis type that can be used to install and control a Redis node.
- # The implementation uses: "sudo service <service_name> start / stop / restart"
- # to control the service operation
- ##################################################################################
+##################################################################################
+# Redis Type
+# Redis type that can be used to install and control a Redis node.
+# The implementation uses: "sudo service <service_name> start / stop / restart"
+# to control the service operation
+##################################################################################
 
   cloudify.nodes.Redis:
     derived_from: cloudify.nodes.ServiceInstaller
@@ -294,12 +293,12 @@ node_types:
           package_list:
             - 'redis-server'
 
- ##################################################################################
- # NodeJS Server Type
- # NodeJS Server type that can be used to install and control a NodeJS instance.
- # The implementation uses: "sudo service <service_name> start / stop / restart"
- # to control the service operation
- ##################################################################################
+##################################################################################
+# NodeJS Server Type
+# NodeJS Server type that can be used to install and control a NodeJS instance.
+# The implementation uses: "sudo service <service_name> start / stop / restart"
+# to control the service operation
+##################################################################################
 
   cloudify.nodes.NodeJSServer:
     derived_from: cloudify.nodes.ServiceInstaller
@@ -313,12 +312,12 @@ node_types:
           package_list:
             - 'nodejs'
 
- ##################################################################################
- # InfluxDB Type
- # InfluxDB type that can be used to install and control an InfluxDB node.
- # The implementation uses: "sudo service <service_name> start / stop / restart"
- # to control the service operation
- ##################################################################################
+##################################################################################
+# InfluxDB Type
+# InfluxDB type that can be used to install and control an InfluxDB node.
+# The implementation uses: "sudo service <service_name> start / stop / restart"
+# to control the service operation
+##################################################################################
 
   cloudify.nodes.InfluxDB:
     derived_from: cloudify.nodes.ServiceInstaller
@@ -338,67 +337,67 @@ node_types:
             - 'http://influxdb.s3.amazonaws.com/influxdb_0.9.2_amd64.deb'
 
 
-##################################################################################
-# Application Types
-##################################################################################
-
-  ##################################################################################
-  # Application Installer Type
-  # TODO: Implementation
-  ##################################################################################
-
-  cloudify.nodes.AppInstaller:
-    derived_from: cloudify.nodes.ApplicationModule
-    properties:
-      name:
-        default: 'Application Node'
-      version:
-        default: '1.0'
-      package_list:
-        default: None
-        description: >
-          Provide a list of packages, RPM or DEB files to install
-      app_server:
-        description: >
-          Name of the application server hosting this app
-      application_binary:
-        description: >
-          The application binary to deploy
-
-  ###########################################################
-  # Nodecellar application.
-  #
-  # This is the actual application source files.
-  # configurable properties:
-  #   - port
-  #   - application url
-  #   - startup script
-  ###########################################################
-
-  cloudify.nodes.NodeJSApplication:
-    derived_from: cloudify.nodes.ApplicationModule
-    properties:
-      port:
-        description: Web application port
-        type: integer
-      application_url:
-        description: >
-          URL to an archive containing the application source.
-          The archive must contain one top level directory.
-        default: https://github.com/cloudify-cosmo/nodecellar/archive/master.tar.gz
-      startup_script:
-        description: >
-          This script will be used to start the nodejs application.
-          The path is relative to the top level single directory inside
-          the archive
-        type: string
-        default: server.js
-    interfaces:
-      cloudify.interfaces.lifecycle:
-        configure: scripts/nodecellar/install-nodecellar-app.sh
-        start: scripts/nodecellar/start-nodecellar-app.sh
-        stop: scripts/nodecellar/stop-nodecellar-app.sh
-
+###################################################################################
+## Application Types
+###################################################################################
+#
+#  ##################################################################################
+#  # Application Installer Type
+#  # TODO: Implementation
+#  ##################################################################################
+#
+#  cloudify.nodes.AppInstaller:
+#    derived_from: cloudify.nodes.ApplicationModule
+#    properties:
+#      name:
+#        default: 'Application Node'
+#      version:
+#        default: '1.0'
+#      package_list:
+#        default: None
+#        description: >
+#          Provide a list of packages, RPM or DEB files to install
+#      app_server:
+#        description: >
+#          Name of the application server hosting this app
+#      application_binary:
+#        description: >
+#          The application binary to deploy
+#
+#  ###########################################################
+#  # Nodecellar application.
+#  #
+#  # This is the actual application source files.
+#  # configurable properties:
+#  #   - port
+#  #   - application url
+#  #   - startup script
+#  ###########################################################
+#
+#  cloudify.nodes.NodeJSApplication:
+#    derived_from: cloudify.nodes.ApplicationModule
+#    properties:
+#      port:
+#        description: Web application port
+#        type: integer
+#      application_url:
+#        description: >
+#          URL to an archive containing the application source.
+#          The archive must contain one top level directory.
+#        default: https://github.com/cloudify-cosmo/nodecellar/archive/master.tar.gz
+#      startup_script:
+#        description: >
+#          This script will be used to start the nodejs application.
+#          The path is relative to the top level single directory inside
+#          the archive
+#        type: string
+#        default: server.js
+#    interfaces:
+#      cloudify.interfaces.lifecycle:
+#        configure: scripts/nodecellar/install-nodecellar-app.sh
+#        start: scripts/nodecellar/start-nodecellar-app.sh
+#        stop: scripts/nodecellar/stop-nodecellar-app.sh
+#
 relationships:
   service.contained_in:
     derived_from: cloudify.relationships.contained_in
