@@ -9,12 +9,13 @@ The plugin implements 2 Cloudify `@operation`s to install & remoe packages.
 - <b>`config`</b> - The install operation accepts a configuration `dict` that specifies what packages dependencies need to be installed and any custom repositories or source-lists that need to be added.<br>
   - <b>`custom_repo`</b>: a `dict` contains information for adding a custom repository or source-list.<br> 
   - <b>`package_list`</b>: a list of packages to be installed. These can be names of packages that can be obtained from either `yum` or `apt` repositories. The list may also contain `URL` locations of packages that the plugin can download and install.<br><br> 
-Below is an example configuration that installs MongoDB through the standard repository by adding a custom sourcelist before obtaining the files.
+Below is an example configuration that installs MongoDB through the standard repository by adding a custom sourcelist before obtaining the files:<br><br>
 
   ```config:
       custom_repo:
         name: 'mongodb-org-3.0'
-        # The definition of the new repository we want to add, both for yum & apt, in this case for MongoDB
+        # The definition of the new repository we want to add, both for yum & apt
+        # In this case we are configuring for MongoDB
         yum:
           name: 'mongodb-org-3.0'
           entry: '[mongodb-org-3.0]
