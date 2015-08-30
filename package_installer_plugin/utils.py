@@ -1,3 +1,5 @@
+import requests
+
 __author__ = 'kemi'
 
 # Built in imports
@@ -27,3 +29,16 @@ def run(command):
                 command, output, execution.returncode))
 
     return execution
+
+
+def download_package(package_file, url):
+    """ Downloads package from url to tempfile """
+
+    ctx.logger.debug('Downloading: {0}'.format(url))
+    package = requests.get(url, stream=True)
+
+    with open(package_file, 'wb') as f:
+        for chunk in package.iter_content(chunk_size=1024):
+            if chunk:
+                f.write(chunk)
+                f.flush()

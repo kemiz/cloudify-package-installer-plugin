@@ -1,7 +1,8 @@
 ##################################################################################
-# Cloudify Package Installer Plugin.
+# Cloudify Package Installer Plugin Types
 # Author: kemi
 ##################################################################################
+tosca_definitions_version: cloudify_dsl_1_1
 
 plugins:
   package_installer:
@@ -64,7 +65,6 @@ workflows:
         mapping: package_installer.package_installer_plugin.service_tasks.start_service
         parameters:
             service_name:
-              default: { get_property: [ cloudify.nodes.ServiceInstaller,  config, service_name ] }
               description: >
                 Name of the service to start
             node_id:
@@ -75,7 +75,6 @@ workflows:
         mapping: package_installer.package_installer_plugin.service_tasks.stop_service
         parameters:
             service_name:
-              default: { get_property: [ cloudify.nodes.ServiceInstaller,  config, service_name ] }
               description: >
                 Name of the service to stop
             node_id:
@@ -113,45 +112,14 @@ node_types:
         default: 1
       config:
         default: None
-#          # list of packages, RPM or DEB files to install
-#          package_list:
-#          # customer repo to add to list
-#          custom_repo:
-#              # yum repository entry
-#              yum:
-#              apt:
-#                # apt key server to add
-#                key_server:
-#                # add command
-#                list_file:
-#          # the name that will be used to start / stop this service
-#          service_name:
-#            default: { get_property: [ SELF,  name ] }
-#            description: >
-#              Name of the service to manage
     interfaces:
       cloudify.interfaces.lifecycle:
         create:
           implementation: package_installer.package_installer_plugin.tasks.install_packages
-          inputs:
-            config:
-              default: { get_property: [ SELF,  config ] }
-              description: >
-                The service configuration
         start:
           implementation: package_installer.package_installer_plugin.service_tasks.start_service
-          inputs:
-            service_name:
-              default: { get_property: [ SELF,  service_name ] }
-              description: >
-                The service name
         stop:
           implementation: package_installer.package_installer_plugin.service_tasks.stop_service
-          inputs:
-            service_name:
-              default: { get_property: [ SELF,  service_name ] }
-              description: >
-                The service name
 
       ##################################################################################
       # Service Command mappings
@@ -170,37 +138,25 @@ node_types:
       ##################################################################################
 
       package.commands:
-        start_service:
+        install_packages:
             implementation: package_installer.package_installer_plugin.tasks.install_packages
-        stop_service:
+            inputs:
+              config:
+                default: { get_property: [ SELF, config ] }
+        remove_packages:
             implementation: package_installer.package_installer_plugin.tasks.remove_packages
-        restart_service:
+            inputs:
+              config:
+                default: { get_property: [ SELF, config ] }
+        reinstall_packages:
             implementation: package_installer.package_installer_plugin.tasks.reinstall_packages
-
+            inputs:
+              config:
+                default: { get_property: [ SELF, config ] }
 
 ##################################################################################
 # Service Types
 ##################################################################################
-
- ##################################################################################
- # Tomcat Server Type
- # A Tomcat server type that can be used to install and control a tomcat instance.
- # The implementation uses: "sudo service <service_name> start / stop / restart"
- # to control the service operation
- ##################################################################################
-
-  cloudify.nodes.TomcatServer:
-    derived_from: cloudify.nodes.ServiceInstaller
-    properties:
-      service_name:
-        default: 'tomcat'
-      version:
-        default: 7
-      config:
-        default:
-          package_list:
-            - 'openjdk-7-jdk'
-            - 'tomcat7'
 
  ##################################################################################
  # Elasticsearch Type
@@ -238,6 +194,10 @@ node_types:
         default: 'mongod'
       version:
         default: '3.0'
+      mongo_config:
+        default:
+          external_config_file:
+          port: 27017
       config:
         default:
           custom_repo:
@@ -254,6 +214,28 @@ node_types:
               entry: 'deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.0 multiverse'
           package_list:
             - 'mongodb-org'
+
+
+  ##################################################################################
+  # Graphana Type
+  # Graphana type that can be used to install and control a Graphana node.
+  # The implementation uses: "sudo service <service_name> start / stop / restart"
+  # to control the service operation
+  ##################################################################################
+
+  cloudify.nodes.Graphana:
+    derived_from: cloudify.nodes.Graphana
+    properties:
+      service_name:
+        default: 'grafana-server'
+      version:
+        default: '2.1.3'
+      config:
+        default:
+          package_list:
+            - 'libfontconfig'
+            - 'adduser'
+            - 'https://grafanarel.s3.amazonaws.com/builds/grafana_2.1.3_amd64.deb'
 
  ##################################################################################
  # Postgres Type
@@ -273,6 +255,88 @@ node_types:
         default:
           package_list:
             - 'postgresql-9.4'
+
+ ##################################################################################
+ # MySQL Server Type
+ # MySQL Server type that can be used to install and control a MySQL node.
+ # The implementation uses: "sudo service <service_name> start / stop / restart"
+ # to control the service operation
+ ##################################################################################
+
+  cloudify.nodes.MySQLServer:
+    derived_from: cloudify.nodes.ServiceInstaller
+    properties:
+      service_name:
+        default: 'mysql'
+      version:
+        default: '5.5'
+      config:
+        default:
+          package_list:
+            - 'mysql-server'
+
+ ##################################################################################
+ # Redis Type
+ # Redis type that can be used to install and control a Redis node.
+ # The implementation uses: "sudo service <service_name> start / stop / restart"
+ # to control the service operation
+ ##################################################################################
+
+  cloudify.nodes.Redis:
+    derived_from: cloudify.nodes.ServiceInstaller
+    properties:
+      service_name:
+        default: 'redis-server'
+      version:
+        default: '3.0.3'
+      config:
+        default:
+          package_list:
+            - 'redis-server'
+
+ ##################################################################################
+ # NodeJS Server Type
+ # NodeJS Server type that can be used to install and control a NodeJS instance.
+ # The implementation uses: "sudo service <service_name> start / stop / restart"
+ # to control the service operation
+ ##################################################################################
+
+  cloudify.nodes.NodeJSServer:
+    derived_from: cloudify.nodes.ServiceInstaller
+    properties:
+      service_name:
+        default: 'nodejs'
+      version:
+        default: '0.12.7'
+      config:
+        default:
+          package_list:
+            - 'nodejs'
+
+ ##################################################################################
+ # InfluxDB Type
+ # InfluxDB type that can be used to install and control an InfluxDB node.
+ # The implementation uses: "sudo service <service_name> start / stop / restart"
+ # to control the service operation
+ ##################################################################################
+
+  cloudify.nodes.InfluxDB:
+    derived_from: cloudify.nodes.ServiceInstaller
+    properties:
+      service_name:
+        default: 'influxdb'
+      version:
+        default: '0.9.2'
+      influx_config:
+        default:
+          admin_port: 8083
+          api_port: 8086
+          external_config_file:
+      config:
+        default:
+          package_list:
+            - 'http://influxdb.s3.amazonaws.com/influxdb_0.9.2_amd64.deb'
+
 
 ##################################################################################
 # Application Types
@@ -301,25 +365,39 @@ node_types:
         description: >
           The application binary to deploy
 
+  ###########################################################
+  # Nodecellar application.
+  #
+  # This is the actual application source files.
+  # configurable properties:
+  #   - port
+  #   - application url
+  #   - startup script
+  ###########################################################
 
-  ##################################################################################
-  # Tomcat Application Type
-  # TODO: Implementation
-  ##################################################################################
-
-  cloudify.nodes.TomcatApplication:
-    derived_from: cloudify.nodes.AppInstaller
+  cloudify.nodes.NodeJSApplication:
+    derived_from: cloudify.nodes.ApplicationModule
     properties:
-      name:
-        default: 'Application'
-      version:
-        default: '1.0'
-      app_server:
-        default: 'tomcat'
-      application_binary:
+      port:
+        description: Web application port
+        type: integer
+      application_url:
         description: >
-          WAR file to deploy
-
+          URL to an archive containing the application source.
+          The archive must contain one top level directory.
+        default: https://github.com/cloudify-cosmo/nodecellar/archive/master.tar.gz
+      startup_script:
+        description: >
+          This script will be used to start the nodejs application.
+          The path is relative to the top level single directory inside
+          the archive
+        type: string
+        default: server.js
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        configure: scripts/nodecellar/install-nodecellar-app.sh
+        start: scripts/nodecellar/start-nodecellar-app.sh
+        stop: scripts/nodecellar/stop-nodecellar-app.sh
 
 relationships:
   service.contained_in:
