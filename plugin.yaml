@@ -142,17 +142,14 @@ node_types:
             implementation: package_installer.package_installer_plugin.tasks.install_packages
             inputs:
               config:
-                default: { get_property: [ SELF, config ] }
         remove_packages:
             implementation: package_installer.package_installer_plugin.tasks.remove_packages
             inputs:
               config:
-                default: { get_property: [ SELF, config ] }
         reinstall_packages:
             implementation: package_installer.package_installer_plugin.tasks.reinstall_packages
             inputs:
               config:
-                default: { get_property: [ SELF, config ] }
 
 ##################################################################################
 # Service Types
