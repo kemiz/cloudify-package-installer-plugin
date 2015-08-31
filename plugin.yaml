@@ -142,15 +142,20 @@ node_types:
             implementation: package_installer.package_installer_plugin.tasks.install_packages
             inputs:
               config:
+                description: >
+                  The package list
         remove_packages:
             implementation: package_installer.package_installer_plugin.tasks.remove_packages
             inputs:
               config:
+                description: >
+                  The package list
         reinstall_packages:
             implementation: package_installer.package_installer_plugin.tasks.reinstall_packages
             inputs:
               config:
-
+                description: >
+                  The package list
 ##################################################################################
 # Service Types
 ##################################################################################
