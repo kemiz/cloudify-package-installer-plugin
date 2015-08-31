@@ -60,7 +60,7 @@ def install_packages(**_):
 
 
 @operation
-def remove_packages(package_list, **_):
+def remove_packages(config, **_):
     """ removes a package from a given node """
 
     package_list = config['package_list']
