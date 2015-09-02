@@ -33,10 +33,12 @@ Below is an example configuration that installs MongoDB through the standard rep
   ```
 
 #### Start / Stop Service Operations
-The `start_service` and `stop_service` operations accept a `service_name` parameter that is used to execute:
+The `start_service` and `stop_service` operations uses the provided `service_name` property to execute:
   ```
   'service <MY_SERVICE> start / stop'
   ```  
+<br>
+This can also be passed as a parameter if it needs overriding.
 <br>
 ### Workflows 
 The plugin comes with built-in workflows to install, remove, reinstall and upgrade packages as well as controlling the operation of installed services post deployment.
