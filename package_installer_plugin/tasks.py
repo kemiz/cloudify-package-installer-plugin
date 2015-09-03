@@ -13,10 +13,11 @@ from utils import run, download_package
 
 
 @operation
-def install_packages(**_):
+def install_packages(config, **_):
     """ Installs a list of packages """
 
-    config = ctx.node.properties['config']
+    if config is None:
+        config = ctx.node.properties['config']
 
     ctx.logger.info('Attempting to install packages')
     distro = platform.linux_distribution(full_distribution_name=False)
@@ -28,7 +29,7 @@ def install_packages(**_):
     if 'custom_repo' in config:
         _add_custom_repo(config['custom_repo'], distro_lower)
 
-    package_list = config['package_dependencies']
+    package_list = config['package_list']
     for package_to_install in package_list:
 
         # Install from repository (yum / apt)
