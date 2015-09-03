@@ -97,17 +97,17 @@ node_types:
 
   ##################################################################################
   # Service Installer Type
-  # A base type that can be used to install and control a service.
+  # Extends the PackageInstaller type and adds capabilities to control a service.
   # A list of packages can be supplied which will be installed in sequential order.
   # The implementation uses: "sudo service <service_name> start / stop / restart"
   # to control the service operation
   ##################################################################################
 
-  cloudify.nodes.ServiceInstaller:
+  cloudify.nodes.PackageInstaller:
     derived_from: cloudify.nodes.SoftwareComponent
     properties:
       service_name:
-        default: 'Service_Node'
+        default: 'PackageInstaller_Node'
       version:
         default: 1
       config:
@@ -116,22 +116,9 @@ node_types:
       cloudify.interfaces.lifecycle:
         create:
           implementation: package_installer.package_installer_plugin.tasks.install_packages
-        start:
-          implementation: package_installer.package_installer_plugin.service_tasks.start_service
-        stop:
-          implementation: package_installer.package_installer_plugin.service_tasks.stop_service
-
-      ##################################################################################
-      # Service Command mappings
-      ##################################################################################
-
-      service.commands:
-        start_service:
-            implementation: package_installer.package_installer_plugin.service_tasks.start_service
-        stop_service:
-            implementation: package_installer.package_installer_plugin.service_tasks.stop_service
-        restart_service:
-            implementation: package_installer.package_installer_plugin.service_tasks.restart_service
+          inputs:
+            config:
+              default: { get_property: [ SELF, config ] }
 
       ##################################################################################
       # Package Command mappings
@@ -139,267 +126,67 @@ node_types:
 
       package.commands:
         install_packages:
-            implementation: package_installer.package_installer_plugin.tasks.install_packages
-            inputs:
-              config:
-                description: >
-                  The package list
+          implementation: package_installer.package_installer_plugin.tasks.install_packages
         remove_packages:
-            implementation: package_installer.package_installer_plugin.tasks.remove_packages
-            inputs:
-              config:
-                description: >
-                  The package list
+          implementation: package_installer.package_installer_plugin.tasks.remove_packages
         reinstall_packages:
-            implementation: package_installer.package_installer_plugin.tasks.reinstall_packages
-            inputs:
-              config:
-                description: >
-                  The package list
-##################################################################################
-# Service Types
-##################################################################################
+          implementation: package_installer.package_installer_plugin.tasks.reinstall_packages
 
- ##################################################################################
- # Elasticsearch Type
- # Elasticsearch type that can be used to install and control an Elasticsearch node.
- # The implementation uses: "sudo service <service_name> start / stop / restart"
- # to control the service operation
- ##################################################################################
-
-  cloudify.nodes.Elasticsearch:
-    derived_from: cloudify.nodes.ServiceInstaller
-    properties:
-      service_name:
-        default: 'elasticsearch'
-      version:
-        default: '1.7.1'
-      config:
-        default:
-          package_list:
-            # Install Java
-            - 'openjdk-7-jdk'
-            # Install Elasticsearch from URL
-            - 'https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.7.1.noarch.rpm'
 
   ##################################################################################
-  # MongoDB Type
-  # MongoDB type that can be used to install and control an MongoDB node.
+  # Service Installer Type
+  # Extends the PackageInstaller type and adds capabilities to control a service.
+  # A list of packages can be supplied which will be installed in sequential order.
   # The implementation uses: "sudo service <service_name> start / stop / restart"
   # to control the service operation
   ##################################################################################
 
-  cloudify.nodes.MongoDB:
-    derived_from: cloudify.nodes.ServiceInstaller
+  cloudify.nodes.ServiceInstaller:
+    derived_from: cloudify.nodes.PackageInstaller
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        start:
+          implementation: package_installer.package_installer_plugin.service_tasks.start_service
+          inputs:
+            service_name:
+              default: { get_property: [ SELF, service_name ] }
+        stop:
+          implementation: package_installer.package_installer_plugin.service_tasks.stop_service
+          inputs:
+            service_name:
+              default: { get_property: [ SELF, service_name ] }
+
+      ##################################################################################
+      # Service Command mappings
+      ##################################################################################
+
+      service.commands:
+        start_service:
+          implementation: package_installer.package_installer_plugin.service_tasks.start_service
+          inputs:
+            service_name:
+              default: { get_property: [ SELF, service_name ] }
+        stop_service:
+          implementation: package_installer.package_installer_plugin.service_tasks.stop_service
+          inputs:
+            service_name:
+              default: { get_property: [ SELF, service_name ] }
+        restart_service:
+          implementation: package_installer.package_installer_plugin.service_tasks.restart_service
+          inputs:
+            service_name:
+              default: { get_property: [ SELF, service_name ] }
+
+
+  ##################################################################################
+  # Configuration Type
+  ##################################################################################
+  configuration:
+    derived_from: cloudify.nodes.Root
     properties:
-      service_name:
-        default: 'mongod'
-      version:
-        default: '3.0'
-      mongo_config:
-        default:
-          external_config_file:
-          port: 27017
-      config:
-        default:
-          custom_repo:
-            name: 'mongodb-org-3.0'
-            yum:
-              name: 'mongodb-org-3.0'
-              entry: '[mongodb-org-3.0]
-                      name=MongoDB Repository
-                      baseurl=https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/3.0/x86_64/
-                      gpgcheck=0
-                      enabled=1'
-            apt:
-              key_server: 'hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10'
-              entry: 'deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.0 multiverse'
-          package_list:
-            - 'mongodb-org'
-
-##################################################################################
-# Graphana Type
-# Graphana type that can be used to install and control a Graphana node.
-# The implementation uses: "sudo service <service_name> start / stop / restart"
-# to control the service operation
-##################################################################################
-
-  cloudify.nodes.Graphana:
-    derived_from: cloudify.nodes.ServiceInstaller
-    properties:
-      service_name:
-        default: 'grafana-server'
-      version:
-        default: '2.1.3'
-      config:
-        default:
-          package_list:
-            - 'libfontconfig'
-            - 'adduser'
-            - 'https://grafanarel.s3.amazonaws.com/builds/grafana_2.1.3_amd64.deb'
-
-##################################################################################
-# Postgres Type
-# Postgres type that can be used to install and control a Postgres node.
-# The implementation uses: "sudo service <service_name> start / stop / restart"
-# to control the service operation
-##################################################################################
-
-  cloudify.nodes.Postgres:
-    derived_from: cloudify.nodes.ServiceInstaller
-    properties:
-      service_name:
-        default: 'postgres'
-      version:
-        default: '9.4'
-      config:
-        default:
-          package_list:
-            - 'postgresql-9.4'
-
-##################################################################################
-# MySQL Server Type
-# MySQL Server type that can be used to install and control a MySQL node.
-# The implementation uses: "sudo service <service_name> start / stop / restart"
-# to control the service operation
-##################################################################################
-
-  cloudify.nodes.MySQLServer:
-    derived_from: cloudify.nodes.ServiceInstaller
-    properties:
-      service_name:
-        default: 'mysql'
-      version:
-        default: '5.5'
-      config:
-        default:
-          package_list:
-            - 'mysql-server'
-
-##################################################################################
-# Redis Type
-# Redis type that can be used to install and control a Redis node.
-# The implementation uses: "sudo service <service_name> start / stop / restart"
-# to control the service operation
-##################################################################################
-
-  cloudify.nodes.Redis:
-    derived_from: cloudify.nodes.ServiceInstaller
-    properties:
-      service_name:
-        default: 'redis-server'
-      version:
-        default: '3.0.3'
-      config:
-        default:
-          package_list:
-            - 'redis-server'
-
-##################################################################################
-# NodeJS Server Type
-# NodeJS Server type that can be used to install and control a NodeJS instance.
-# The implementation uses: "sudo service <service_name> start / stop / restart"
-# to control the service operation
-##################################################################################
-
-  cloudify.nodes.NodeJSServer:
-    derived_from: cloudify.nodes.ServiceInstaller
-    properties:
-      service_name:
-        default: 'nodejs'
-      version:
-        default: '0.12.7'
-      config:
-        default:
-          package_list:
-            - 'nodejs'
-
-##################################################################################
-# InfluxDB Type
-# InfluxDB type that can be used to install and control an InfluxDB node.
-# The implementation uses: "sudo service <service_name> start / stop / restart"
-# to control the service operation
-##################################################################################
-
-  cloudify.nodes.InfluxDB:
-    derived_from: cloudify.nodes.ServiceInstaller
-    properties:
-      service_name:
-        default: 'influxdb'
-      version:
-        default: '0.9.2'
-      influx_config:
-        default:
-          admin_port: 8083
-          api_port: 8086
-          external_config_file:
-      config:
-        default:
-          package_list:
-            - 'http://influxdb.s3.amazonaws.com/influxdb_0.9.2_amd64.deb'
+      config: {}
 
 
-###################################################################################
-## Application Types
-###################################################################################
-#
-#  ##################################################################################
-#  # Application Installer Type
-#  # TODO: Implementation
-#  ##################################################################################
-#
-#  cloudify.nodes.AppInstaller:
-#    derived_from: cloudify.nodes.ApplicationModule
-#    properties:
-#      name:
-#        default: 'Application Node'
-#      version:
-#        default: '1.0'
-#      package_list:
-#        default: None
-#        description: >
-#          Provide a list of packages, RPM or DEB files to install
-#      app_server:
-#        description: >
-#          Name of the application server hosting this app
-#      application_binary:
-#        description: >
-#          The application binary to deploy
-#
-#  ###########################################################
-#  # Nodecellar application.
-#  #
-#  # This is the actual application source files.
-#  # configurable properties:
-#  #   - port
-#  #   - application url
-#  #   - startup script
-#  ###########################################################
-#
-#  cloudify.nodes.NodeJSApplication:
-#    derived_from: cloudify.nodes.ApplicationModule
-#    properties:
-#      port:
-#        description: Web application port
-#        type: integer
-#      application_url:
-#        description: >
-#          URL to an archive containing the application source.
-#          The archive must contain one top level directory.
-#        default: https://github.com/cloudify-cosmo/nodecellar/archive/master.tar.gz
-#      startup_script:
-#        description: >
-#          This script will be used to start the nodejs application.
-#          The path is relative to the top level single directory inside
-#          the archive
-#        type: string
-#        default: server.js
-#    interfaces:
-#      cloudify.interfaces.lifecycle:
-#        configure: scripts/nodecellar/install-nodecellar-app.sh
-#        start: scripts/nodecellar/start-nodecellar-app.sh
-#        stop: scripts/nodecellar/stop-nodecellar-app.sh
-#
 relationships:
   service.contained_in:
     derived_from: cloudify.relationships.contained_in

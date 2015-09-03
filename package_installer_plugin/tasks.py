@@ -28,7 +28,7 @@ def install_packages(**_):
     if 'custom_repo' in config:
         _add_custom_repo(config['custom_repo'], distro_lower)
 
-    package_list = config['package_list']
+    package_list = config['package_dependencies']
     for package_to_install in package_list:
 
         # Install from repository (yum / apt)
@@ -86,11 +86,11 @@ def _add_keyserver(key_server):
 def _add_source_list(file_path, repo_entry, temp_file):
     ctx.logger.debug('Opening temp file: {0}'.format(temp_file))
     source_list_file = open('/tmp/' + temp_file, "wb")
-    ctx.logger.info('Adding entry to file: {0}'.format(repo_entry))
+    ctx.logger.debug('Adding entry to file: {0}'.format(repo_entry))
     source_list_file.write(repo_entry)
     source_list_file.close()
     move_command = 'sudo mv /tmp/' + temp_file + ' ' + file_path + temp_file
-    ctx.logger.info('Moving file to correct location: {0}'.format(move_command))
+    ctx.logger.debug('Moving file to correct location: {0}'.format(move_command))
     run(move_command)
 
 
@@ -116,6 +116,7 @@ def _add_custom_repo(repo, distro):
         raise exceptions.NonRecoverableError(
             'Only CentOS and Ubuntu supported.')
 
+    ctx.logger.info('Adding new repository source: {0}'.format(repo_name))
     _add_source_list(file_path, repo_entry, temp_file)
 
 

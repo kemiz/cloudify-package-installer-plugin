@@ -8,8 +8,7 @@ from cloudify.decorators import operation
 
 
 @operation
-def start_service(**_):
-    service_name = ctx.node.properties['service_name']
+def start_service(service_name, **_):
     start_command = START_SERVICE_COMMAND + service_name
     ctx.logger.info('Starting service: ' + service_name)
     ctx.logger.info('Running command: {0}'.format(start_command))
@@ -17,17 +16,17 @@ def start_service(**_):
 
 
 @operation
-def stop_service(**_):
-    service_name = ctx.node.properties['service_name']
+def stop_service(service_name, custom_command, **_):
     stop_command = STOP_SERVICE_COMMAND + service_name
+    if custom_command is not None:
+        stop_command = custom_command
     ctx.logger.info('Stopping service: ' + service_name)
     ctx.logger.info('Running command: {0}'.format(stop_command))
     run(stop_command)
 
 
 @operation
-def restart_service(**_):
-    service_name = ctx.node.properties['service_name']
+def restart_service(service_name, **_):
     stop_command = RESTART_SERVICE_COMMAND + service_name
     ctx.logger.info('Restarting service: ' + service_name)
     ctx.logger.info('Running command: {0}'.format(stop_command))

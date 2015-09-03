@@ -42,3 +42,9 @@ def download_package(package_file, url):
             if chunk:
                 f.write(chunk)
                 f.flush()
+
+
+def unzip(source, destination):
+    ctx.logger.info('Unzipping file: ' + source)
+    unzip_command = 'unzip {0} -d {1}'.format(source, destination)
+    run(unzip_command)
