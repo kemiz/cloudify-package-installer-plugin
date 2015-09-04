@@ -1,9 +1,7 @@
+import subprocess
 import requests
 
 __author__ = 'kemi'
-
-# Built in imports
-from subprocess import Popen, PIPE
 
 # Cloudify imports
 from cloudify import ctx
@@ -17,12 +15,10 @@ def run(command):
     output = None
 
     try:
-        execution = Popen(command_as_list, stdout=PIPE)
-        output = execution.communicate()[0]
-        execution.wait()
+        execution = subprocess.check_output(command_as_list)
     except Exception as e:
         raise exceptions.NonRecoverableError(
-            'Unable to run command. Error {0}'.format(str(e)))
+            'Unable to run command. Error {0}'.format(execution.returncode))
     finally:
         if execution.returncode != 0:
             raise exceptions.RecoverableError(
