@@ -26,7 +26,7 @@ def run(command):
     finally:
         if execution.returncode != 0:
             raise exceptions.RecoverableError(
-                'Unable to run command. Error {0}'.format(str(e)))
+                'Unable to run command. Error: {0}'.format(execution))
         ctx.logger.info(
             'RAN: {0}. OUT: {1}. Code: {2}.'.format(
                 command, output, execution.returncode))
