@@ -150,12 +150,15 @@ node_types:
           inputs:
             service_name:
               default: { get_property: [ SELF, service_name ] }
+            custom_command:
+              default: None
         stop:
           implementation: package_installer.package_installer_plugin.service_tasks.stop_service
           inputs:
             service_name:
               default: { get_property: [ SELF, service_name ] }
-
+            custom_command:
+              default: None
       ##################################################################################
       # Service Command mappings
       ##################################################################################
@@ -166,17 +169,22 @@ node_types:
           inputs:
             service_name:
               default: { get_property: [ SELF, service_name ] }
+            custom_command:
+              default: None
         stop_service:
           implementation: package_installer.package_installer_plugin.service_tasks.stop_service
           inputs:
             service_name:
               default: { get_property: [ SELF, service_name ] }
+            custom_command:
+              default: None
         restart_service:
           implementation: package_installer.package_installer_plugin.service_tasks.restart_service
           inputs:
             service_name:
               default: { get_property: [ SELF, service_name ] }
-
+            custom_command:
+              default: None
 
   ##################################################################################
   # Configuration Type
