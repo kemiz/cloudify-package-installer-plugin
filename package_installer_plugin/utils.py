@@ -11,7 +11,7 @@ from cloudify import exceptions
 def run(command):
 
     command_as_list = command.split()
-
+    ctx.logger.info(command_as_list)
     try:
         execution = subprocess.check_output(command_as_list)
     except Exception as e:
@@ -29,7 +29,7 @@ def download_package(package_file, url):
     ctx.logger.debug('Downloading: {0}'.format(url))
     package = requests.get(url, stream=True)
 
-    with open(package_file, 'wb') as f:
+    with open(package_file[1], 'wb') as f:
         for chunk in package.iter_content(chunk_size=1024):
             if chunk:
                 f.write(chunk)
