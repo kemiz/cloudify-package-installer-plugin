@@ -17,6 +17,6 @@ APT_SOURCELIST_DIR = '/etc/apt/sources.list.d/'
 YUM_REPOS_DIR = '/etc/yum.repos.d/'
 
 # Services
-START_SERVICE_COMMAND = 'sudo start service '
-STOP_SERVICE_COMMAND = 'sudo stop service '
-RESTART_SERVICE_COMMAND = 'sudo restart service '
+START_SERVICE_COMMAND = 'sudo service start '
+STOP_SERVICE_COMMAND = 'sudo service stop '
+RESTART_SERVICE_COMMAND = 'sudo service restart '

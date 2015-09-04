@@ -9,7 +9,7 @@ from cloudify.decorators import operation
 
 @operation
 def start_service(service_name, **_):
-    start_command = START_SERVICE_COMMAND + service_name
+    start_command = RESTART_SERVICE_COMMAND + service_name
     ctx.logger.info('Starting service: ' + service_name)
     ctx.logger.info('Running command: {0}'.format(start_command))
     run(start_command)
