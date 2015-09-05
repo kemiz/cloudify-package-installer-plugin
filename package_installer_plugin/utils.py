@@ -26,7 +26,7 @@ def run(command):
 def download_package(package_file, url):
     """ Downloads package from url to tempfile """
 
-    ctx.logger.debug('Downloading: {0}'.format(url))
+    ctx.logger.info('Downloading: {0}'.format(url))
     package = requests.get(url, stream=True)
 
     with open(package_file[1], 'wb') as f:
