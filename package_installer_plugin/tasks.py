@@ -51,12 +51,13 @@ def install_packages(config, **_):
 
             ctx.logger.info('Installing from URL: {0}'.format(package_to_install))
             package = tempfile.mkstemp()
-            download_file(source=package_to_install, destination=package)
+            package_path = package[1]
+            download_file(source=package_to_install, destination=package_path)
 
             install_command = _get_install_command(
                 distro=distro_lower,
                 install_from_repo=False,
-                package=package)
+                package=package_path)
 
         ctx.logger.info('Running command: {0}'.format(install_command))
         run(install_command)
