@@ -9,7 +9,7 @@ import tempfile
 
 # Cloudify Imports
 from package_installer_plugin.constants import *
-from utils import run, download_package
+from utils import run, download_file
 
 
 @operation
@@ -30,10 +30,12 @@ def install_packages(config, **_):
         _add_custom_repo(config['custom_repo'], distro_lower)
 
     package_list = config['package_list']
+
     for package_to_install in package_list:
 
         # Install from repository (yum / apt)
         if 'http' not in package_to_install:
+
             ctx.logger.info('Installing from repository: {0}'.format(package_to_install))
 
             install_command = _get_install_command(
@@ -46,15 +48,15 @@ def install_packages(config, **_):
 
         # Install from package
         else:
-            ctx.logger.info('Installing from URL: {0}'.format(package_to_install))
 
-            _, package_file = tempfile.mkstemp()
-            download_package(package_file, package_to_install)
+            ctx.logger.info('Installing from URL: {0}'.format(package_to_install))
+            package = tempfile.mkstemp()
+            download_file(source=package_to_install, destination=package)
 
             install_command = _get_install_command(
                 distro=distro_lower,
                 install_from_repo=False,
-                package=package_file[1])
+                package=package)
 
         ctx.logger.info('Running command: {0}'.format(install_command))
         run(install_command)

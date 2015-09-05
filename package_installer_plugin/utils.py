@@ -23,13 +23,13 @@ def run(command):
     return execution
 
 
-def download_package(package_file, url):
-    """ Downloads package from url to tempfile """
+def download_file(source, destination):
+    """ Downloads a file from url to destination file """
 
-    ctx.logger.info('Downloading: {0}'.format(url))
-    package = requests.get(url, stream=True)
+    ctx.logger.info('Downloading: {0}'.format(source))
+    package = requests.get(source, stream=True)
 
-    with open(package_file[1], 'wb') as f:
+    with open(destination, 'wb') as f:
         for chunk in package.iter_content(chunk_size=1024):
             if chunk:
                 f.write(chunk)
