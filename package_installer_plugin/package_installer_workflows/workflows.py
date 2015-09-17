@@ -2,44 +2,27 @@ __author__ = 'kemi'
 
 from cloudify.decorators import workflow
 from cloudify.workflows import ctx
-from cloudify.workflows import parameters as p
+from cloudify.workflows import parameters
 from package_installer_plugin.constants import *
 
 @workflow
-def remove_packages(package, node_id, **_):
-    """ uninstalls a specified package from a given node
-    :param package: package to uninstall
-    :param node_id: node to uninstall package from
-    """
+def remove_packages(**_):
+    """ uninstalls a specified package from a given node """
 
-    instance = None
     for node in ctx.nodes:
-        if node_id == node.id:
-            for node_instance in node.instances:
-                instance = node_instance
-                break
-            break
-
-    ctx.logger.info("executing on instance {0}".format(instance))
-    operation_path = PACKAGE_COMMANDS + 'remove_packages'
-    instance.execute_operation(operation_path, package)
+        for node_instance in node.instances:
+            ctx.logger.info("executing on instance {0}".format(node_instance))
+            operation_path = PACKAGE_COMMANDS + 'remove_packages'
+            node_instance.execute_operation(operation_path, parameters.package)
 
 
 @workflow
-def install_packages(package, node_id, **_):
-    """ installs a specified package from a given node
-    :param package: package to install
-    :param node_id: node to install package to
-    """
+def install_packages(**_):
 
-    instance = None
+    """ installs a specified package from a given node """
+
     for node in ctx.nodes:
-        if node_id == node.id:
-            for node_instance in node.instances:
-                instance = node_instance
-                break
-            break
-
-    ctx.logger.info("executing on instance {0}".format(instance))
-    operation_path = PACKAGE_COMMANDS + 'install_packages'
-    instance.execute_operation(operation_path, package)
+        for node_instance in node.instances:
+            ctx.logger.info("executing on instance {0}".format(node_instance))
+            operation_path = PACKAGE_COMMANDS + 'install_packages'
+            node_instance.execute_operation(operation_path, parameters.package)
