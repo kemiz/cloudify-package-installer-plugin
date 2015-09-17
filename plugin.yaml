@@ -36,25 +36,6 @@ workflows:
             description: >
               The node id to execute workflow on
 
-    reinstall_packages:
-        mapping: package_installer.package_installer_workflows.tasks.reinstall_packages
-        parameters:
-          package_list:
-            description: >
-              Provide a list of RPM or DEB file URLs to reinstall
-          node_id:
-            description: >
-              The node id to execute workflow on
-
-    upgrade_packages:
-        mapping: package_installer.package_installer_workflows.tasks.reinstall_packages
-        parameters:
-          package_list:
-            description: >
-              Provide a list of RPM or DEB file URLs to reinstall
-          node_id:
-            description: >
-              The node id to execute workflow on
 
   ##################################################################################
   # Service workflows
@@ -77,17 +58,6 @@ workflows:
           service_name:
             description: >
               Name of the service to stop
-          node_id:
-            description: >
-              The node id to execute workflow on
-
-    restart_service:
-      mapping: package_installer.package_installer_workflows.service_workflows.restart_service
-      parameters:
-          service_name:
-            default: { get_property: [ cloudify.nodes.ServiceInstaller, config,  service_name ] }
-            description: >
-              Name of the service to restart
           node_id:
             description: >
               The node id to execute workflow on
@@ -129,8 +99,6 @@ node_types:
           implementation: package_installer.package_installer_plugin.tasks.install_packages
         remove_packages:
           implementation: package_installer.package_installer_plugin.tasks.remove_packages
-        reinstall_packages:
-          implementation: package_installer.package_installer_plugin.tasks.reinstall_packages
 
 
   ##################################################################################
