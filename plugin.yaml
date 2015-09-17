@@ -17,7 +17,7 @@ workflows:
   ##################################################################################
 
     install_packages:
-        mapping: package_installer.package_installer_plugin.tasks.install_packages
+        mapping: package_installer.package_installer_workflows.tasks.install_packages
         parameters:
           package_list:
             description: >
@@ -27,7 +27,7 @@ workflows:
               The node id to execute workflow on
 
     remove_packages:
-        mapping: package_installer.package_installer_plugin.tasks.remove_packages
+        mapping: package_installer.package_installer_workflows.tasks.remove_packages
         parameters:
           package_list:
             description: >
@@ -37,7 +37,7 @@ workflows:
               The node id to execute workflow on
 
     reinstall_packages:
-        mapping: package_installer.package_installer_plugin.tasks.reinstall_packages
+        mapping: package_installer.package_installer_workflows.tasks.reinstall_packages
         parameters:
           package_list:
             description: >
@@ -47,7 +47,7 @@ workflows:
               The node id to execute workflow on
 
     upgrade_packages:
-        mapping: package_installer.package_installer_plugin.tasks.reinstall_packages
+        mapping: package_installer.package_installer_workflows.tasks.reinstall_packages
         parameters:
           package_list:
             description: >
@@ -62,7 +62,7 @@ workflows:
   ##################################################################################
 
     start_service:
-      mapping: package_installer.package_installer_plugin.service_tasks.start_service
+      mapping: package_installer.package_installer_workflows.service_workflows.start_service
       parameters:
           service_name:
             description: >
@@ -72,7 +72,7 @@ workflows:
               The node id to execute workflow on
 
     stop_service:
-      mapping: package_installer.package_installer_plugin.service_tasks.stop_service
+      mapping: package_installer.package_installer_workflows.service_workflows.stop_service
       parameters:
           service_name:
             description: >
@@ -82,7 +82,7 @@ workflows:
               The node id to execute workflow on
 
     restart_service:
-      mapping: package_installer.package_installer_plugin.service_tasks.restart_service
+      mapping: package_installer.package_installer_workflows.service_workflows.restart_service
       parameters:
           service_name:
             default: { get_property: [ cloudify.nodes.ServiceInstaller, config,  service_name ] }
