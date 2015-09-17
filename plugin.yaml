@@ -46,9 +46,11 @@ workflows:
       mapping: package_installer.package_installer_workflows.service_workflows.start_service
       parameters:
           service_name:
+            type: string
             description: >
               Name of the service to start
           node_id:
+            type: string
             description: >
               The node id to execute workflow on
 
@@ -56,9 +58,11 @@ workflows:
       mapping: package_installer.package_installer_workflows.service_workflows.stop_service
       parameters:
           service_name:
+            type: string
             description: >
               Name of the service to stop
           node_id:
+            type: string
             description: >
               The node id to execute workflow on
 
