@@ -34,7 +34,7 @@ Below is an example configuration that installs MongoDB through the standard rep
 
 #### Start / Stop Service Operations
 The `start_service` and `stop_service` operations uses the provided `service_name` property to execute:
-  ```
+  ```bash
   'service <MY_SERVICE> start / stop'
   ```  
 <br>
