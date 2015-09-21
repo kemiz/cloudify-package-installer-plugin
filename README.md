@@ -11,7 +11,7 @@ The install operation accepts a configuration that specifies what packages depen
   - <b>`package_list`</b>: a list of packages to be installed. These can be names of packages that can be obtained from either `yum` or `apt` repositories. The list may also contain `URL` locations of packages that the plugin can download and install.<br><br> 
 Below is an example configuration that installs MongoDB through the standard repository by adding a custom sourcelist before obtaining the files:<br><br>
 
-  ```
+  ```yaml
   config:
     custom_repo:
       name: 'mongodb-org-3.0'
@@ -45,7 +45,7 @@ The plugin comes with built-in workflows to install, remove, reinstall and upgra
 <br><br>
 ### Extending the ServiceInstaller base-type
 It is intended that you extend the ServiceInstaller in order to provide further tailored service types definitions. For example to create a deploy a new ``Elasticsearch`` instance you can define a new type:
-```
+```yaml
   cloudify.nodes.Elasticsearch:
     derived_from: cloudify.nodes.ServiceInstaller
     properties:
@@ -62,7 +62,7 @@ It is intended that you extend the ServiceInstaller in order to provide further 
             - 'https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.7.1.noarch.rpm'
 ```
 Then we can easily specify a simple node template as:
-```
+```yaml
   # The service instance
   elasticsearch:
     type: cloudify.nodes.Elasticsearch
