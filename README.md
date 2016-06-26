@@ -1,8 +1,8 @@
 ## Cloudify Package Installer Plugin
 
 This plugin allows you to install & remove a list of packages on a provisioned host.
+It also provides hooks to the standard linux service commands to control the operation of an installed service.
 
-Additionally the plugin automatically binds to the standard linux service commands to control the operation of an installed service.
 ### Plugin Operations
 #### Install Operation
 The install operation accepts a configuration that specifies what packages dependencies need to be installed and any custom repositories or source-lists that need to be added.
